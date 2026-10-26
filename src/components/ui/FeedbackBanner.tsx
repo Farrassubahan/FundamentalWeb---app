@@ -40,7 +40,7 @@ export const FeedbackBanner: React.FC<FeedbackBannerProps> = ({
       </View>
 
       <GameButton
-        title={isLastQuestion ? 'Lihat Hasil Akhir \u2192' : 'Lanjutkan \u2192'}
+        title={isLastQuestion ? 'Lihat Hasil Akhir →' : 'Lanjutkan →'}
         variant={isCorrect ? 'primary' : 'danger'}
         size="lg"
         onPress={onNext}

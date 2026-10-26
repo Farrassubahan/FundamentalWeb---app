@@ -415,7 +415,7 @@ function renderTodos() {
     li.className = "todo-item" + (todo.done ? " selesai" : "");
     li.innerHTML = \`
       <span onclick="toggleSelesai(\${todo.id})" style="cursor: pointer; flex: 1;">
-        \${todo.done ? "\u2705" : "\u25fb\ufe0f"} \${todo.text}
+        \${todo.done ? "✅" : "⬜"} \${todo.text}
       </span>
       <button class="btn-hapus" onclick="hapusTugas(\${todo.id})">Hapus</button>
     \`;

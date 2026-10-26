@@ -36,7 +36,7 @@ export const CelebrationModal: React.FC<CelebrationModalProps> = ({
                 <Ionicons name="trophy" size={54} color="#F59E0B" />
               </View>
               <Text style={styles.subtitle}>SELAMAT! NAIK LEVEL!</Text>
-              <Text style={styles.mainTitle}>Level {newLevel}</Text>
+              <Text style={styles.mainTitle}>Level {Math.max(1, Math.round(Number(newLevel) || 1))}</Text>
               <Text style={styles.desc}>
                 Kerja kerasmu membuahkan hasil! Kamu semakin dekat menjadi Master Web Developer.
               </Text>
@@ -60,7 +60,7 @@ export const CelebrationModal: React.FC<CelebrationModalProps> = ({
                 <Ionicons name="sparkles" size={54} color="#10B981" />
               </View>
               <Text style={styles.subtitle}>MATERI SELESAI!</Text>
-              <Text style={styles.mainTitle}>+{xpEarned || 30} XP</Text>
+              <Text style={styles.mainTitle}>+{Math.max(0, Math.round(Number(xpEarned) || 30))} XP</Text>
               <Text style={styles.desc}>
                 Hebat! Satu langkah maju dalam petualangan belajarmu hari ini.
               </Text>
@@ -68,7 +68,7 @@ export const CelebrationModal: React.FC<CelebrationModalProps> = ({
           )}
 
           <GameButton
-            title="Lanjutkan Belajar \u2192"
+            title="Lanjutkan Belajar →"
             variant="primary"
             size="lg"
             onPress={onClose}

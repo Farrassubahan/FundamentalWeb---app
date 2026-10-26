@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { initDatabase } from '@/database/db';
-import { getUserProfile, unlockLesson } from '@/database/repository';
+import { getUserProfile, unlockLesson, optimizeDatabaseStorage } from '@/database/repository';
 
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -17,6 +17,7 @@ export default function RootLayout() {
     async function prepare() {
       try {
         await initDatabase();
+        await optimizeDatabaseStorage();
         // Ensure initial lesson is unlocked
         await unlockLesson('html-101');
 

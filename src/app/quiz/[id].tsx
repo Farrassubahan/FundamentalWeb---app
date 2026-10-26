@@ -7,6 +7,7 @@ import {
   ScrollView,
   TextInput,
   Alert,
+  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
@@ -65,15 +66,52 @@ export default function QuizScreen() {
     init();
   }, []);
 
+  const handleQuit = () => {
+    Alert.alert(
+      'Keluar dari Quiz?',
+      'Progres latihan saat ini tidak akan disimpan jika kamu keluar sekarang.',
+      [
+        { text: 'Lanjut Quiz', style: 'cancel' },
+        {
+          text: 'Keluar',
+          style: 'destructive',
+          onPress: () => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace('/(tabs)/learn');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  useEffect(() => {
+    const onBack = () => {
+      if (quizFinished) {
+        router.replace('/(tabs)/learn');
+        return true;
+      }
+      handleQuit();
+      return true;
+    };
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBack);
+    return () => sub.remove();
+  }, [quizFinished]);
+
   if (!lesson || !lesson.questions.length) {
     return (
       <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
         <View style={styles.centerBox}>
           <Text style={styles.centerText}>Tidak ada soal evaluasi untuk materi ini.</Text>
           <GameButton
-            title="Kembali"
+            title="Kembali ke Roadmap"
             variant="outline"
-            onPress={() => router.back()}
+            onPress={() => {
+              if (router.canGoBack()) router.back();
+              else router.replace('/(tabs)/learn');
+            }}
           />
         </View>
       </SafeAreaView>
@@ -85,24 +123,19 @@ export default function QuizScreen() {
     ((currentIdx + (hasSubmitted ? 1 : 0)) / lesson.questions.length) * 100
   );
 
-  const handleQuit = () => {
-    Alert.alert(
-      'Keluar dari Quiz?',
-      'Progres latihan saat ini tidak akan disimpan jika kamu keluar sekarang.',
-      [
-        { text: 'Lanjut Quiz', style: 'cancel' },
-        { text: 'Keluar', style: 'destructive', onPress: () => router.back() },
-      ]
-    );
-  };
-
   const handleCheckAnswer = async () => {
-    if (userAnswer === null || userAnswer === undefined || userAnswer === '') {
+    let answer = userAnswer;
+    if (currentQ.type === 'order_lines' && (answer === null || answer === undefined)) {
+      answer = orderedLines;
+      setUserAnswer(orderedLines);
+    }
+
+    if (answer === null || answer === undefined || answer === '') {
       Alert.alert('Pilih Jawaban', 'Silakan pilih atau ketik jawabanmu terlebih dahulu!');
       return;
     }
 
-    const evalRes = evaluateAnswer(currentQ, userAnswer);
+    const evalRes = evaluateAnswer(currentQ, answer);
     setEvaluation(evalRes);
     setHasSubmitted(true);
 
@@ -257,7 +290,7 @@ export default function QuizScreen() {
 
           <View style={styles.finishActionBox}>
             <GameButton
-              title={passed ? 'Lanjut ke Roadmap \u2192' : 'Pelajari Ulang Materi'}
+              title={passed ? 'Lanjut ke Roadmap →' : 'Pelajari Ulang Materi'}
               variant="primary"
               size="lg"
               onPress={() => {
@@ -267,8 +300,17 @@ export default function QuizScreen() {
                   router.replace(`/lesson/${lesson.id}`);
                 }
               }}
-              style={{ width: '100%' }}
+              style={{ width: '100%', marginBottom: passed ? 0 : 10 }}
             />
+            {!passed && (
+              <GameButton
+                title="Kembali ke Roadmap"
+                variant="outline"
+                size="md"
+                onPress={() => router.replace('/(tabs)/learn')}
+                style={{ width: '100%' }}
+              />
+            )}
           </View>
         </View>
 
@@ -448,7 +490,7 @@ export default function QuizScreen() {
         {currentQ.type === 'order_lines' && (
           <View style={styles.orderLinesBox}>
             <Text style={styles.orderLinesLabel}>
-              Gunakan tombol panah (\u2191 / \u2193) untuk menyusun baris kode dengan urutan yang benar:
+              Gunakan tombol panah (↑ / ↓) untuk menyusun baris kode dengan urutan yang benar:
             </Text>
             {orderedLines.map((line, idx) => (
               <View key={idx} style={styles.orderLineItem}>

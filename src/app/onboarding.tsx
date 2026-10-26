@@ -174,7 +174,7 @@ export default function OnboardingScreen() {
           {/* Start CTA Button */}
           <View style={styles.ctaBox}>
             <GameButton
-              title="Mulai Petualangan Belajar \u2192"
+              title="Mulai Petualangan Belajar →"
               variant="primary"
               size="lg"
               loading={loading}

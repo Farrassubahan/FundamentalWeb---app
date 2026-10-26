@@ -15,11 +15,12 @@ export interface LevelInfo {
 
 export const getLevelInfo = (xp: number): LevelInfo => {
   // Level formula: Level = floor(sqrt(xp / 50)) + 1
-  const level = Math.max(1, Math.floor(Math.sqrt(xp / 50)) + 1);
+  const safeXp = Math.max(0, Math.floor(Number(xp) || 0));
+  const level = Math.max(1, Math.floor(Math.sqrt(safeXp / 50)) + 1);
   const currentThreshold = Math.pow(level - 1, 2) * 50;
   const nextThreshold = Math.pow(level, 2) * 50;
-  const xpInCurrentLevel = xp - currentThreshold;
-  const xpNeeded = nextThreshold - currentThreshold;
+  const xpInCurrentLevel = Math.max(0, safeXp - currentThreshold);
+  const xpNeeded = Math.max(1, nextThreshold - currentThreshold);
   const progressPercent = Math.min(100, Math.max(0, Math.round((xpInCurrentLevel / xpNeeded) * 100)));
 
   return {

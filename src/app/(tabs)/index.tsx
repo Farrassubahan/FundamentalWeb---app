@@ -136,7 +136,7 @@ export default function DashboardScreen() {
 
               <View style={styles.continueActionRow}>
                 <GameButton
-                  title="Mulai Materi \u2192"
+                  title="Mulai Materi →"
                   variant="primary"
                   size="md"
                   onPress={() => router.push(`/lesson/${currentLesson.id}`)}
@@ -150,7 +150,7 @@ export default function DashboardScreen() {
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>4 Dunia Web Programming</Text>
             <TouchableOpacity onPress={() => router.push('/(tabs)/learn')}>
-              <Text style={styles.sectionLink}>Buka Roadmap \u2192</Text>
+              <Text style={styles.sectionLink}>Buka Roadmap →</Text>
             </TouchableOpacity>
           </View>
 

@@ -66,8 +66,8 @@ export const evaluateAnswer = (
             (line, idx) =>
               line.trim() === (question.correctAnswer as string[])[idx].trim()
           );
-        userAnswerSummary = userAnswer.join(' \u2192 ');
-        correctAnswerSummary = (question.correctAnswer as string[]).join(' \u2192 ');
+        userAnswerSummary = userAnswer.join(' → ');
+        correctAnswerSummary = (question.correctAnswer as string[]).join(' → ');
       }
       break;
     }

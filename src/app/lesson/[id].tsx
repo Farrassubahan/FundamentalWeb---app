@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
@@ -34,6 +35,23 @@ export default function LessonDetailScreen() {
     loadStats();
   }, []);
 
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/learn');
+    }
+  };
+
+  useEffect(() => {
+    const onBack = () => {
+      handleBack();
+      return true;
+    };
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBack);
+    return () => sub.remove();
+  }, []);
+
   if (!lesson) {
     return (
       <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
@@ -42,7 +60,7 @@ export default function LessonDetailScreen() {
           <GameButton
             title="Kembali ke Roadmap"
             variant="outline"
-            onPress={() => router.back()}
+            onPress={handleBack}
           />
         </View>
       </SafeAreaView>
@@ -69,7 +87,7 @@ export default function LessonDetailScreen() {
       <View style={styles.navBar}>
         <View style={{ maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center', flexDirection: 'row', alignItems: 'center' }}>
           <TouchableOpacity
-            onPress={() => router.back()}
+            onPress={handleBack}
             style={styles.backBtn}
           >
             <Ionicons name="arrow-back" size={24} color="#0F172A" />
@@ -77,7 +95,7 @@ export default function LessonDetailScreen() {
 
           <View style={styles.navMiddle}>
             <Text style={[styles.navWorldTag, { color: worldTheme.primary }]}>
-              {lesson.worldTitle} \u2022 Level {lesson.level}
+              {lesson.worldTitle} • Level {lesson.level}
             </Text>
           </View>
 
@@ -232,7 +250,7 @@ export default function LessonDetailScreen() {
       <View style={styles.bottomBar}>
         <View style={{ maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center' }}>
           <GameButton
-            title={`Uji Pemahaman (${lesson.questions.length} Soal) \u2192`}
+            title={`Uji Pemahaman (${lesson.questions.length} Soal) →`}
             variant="primary"
             size="lg"
             onPress={handleStartQuiz}

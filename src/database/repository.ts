@@ -290,6 +290,33 @@ export const addQuizHistory = async (
      VALUES (?, ?, ?, ?, ?)`,
     [lessonId, score, totalQuestions, xpEarned, nowIso]
   );
+
+  // Storage Optimization: Limit quiz history table to recent 50 entries
+  await db.runAsync(
+    `DELETE FROM quiz_history 
+     WHERE id NOT IN (
+       SELECT id FROM quiz_history 
+       ORDER BY id DESC 
+       LIMIT 50
+     )`
+  );
+};
+
+export const optimizeDatabaseStorage = async (): Promise<void> => {
+  try {
+    const db = getDatabase();
+    await db.runAsync(
+      `DELETE FROM quiz_history 
+       WHERE id NOT IN (
+         SELECT id FROM quiz_history 
+         ORDER BY id DESC 
+         LIMIT 50
+       )`
+    );
+    await db.execAsync('VACUUM;');
+  } catch (err) {
+    console.warn('Database optimization notice:', err);
+  }
 };
 
 export const getQuizHistory = async (): Promise<QuizHistoryItem[]> => {

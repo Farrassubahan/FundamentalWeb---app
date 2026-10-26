@@ -160,7 +160,7 @@ export const CSS_LESSONS: Lesson[] = [
       },
       {
         type: 'text',
-        content: 'Setiap elemen dalam HTML dianggap oleh browser sebagai sebuah kotak persegi panjang yang terdiri dari 4 lapisan berturut-turut dari dalam ke luar: Content \u2192 Padding \u2192 Border \u2192 Margin.'
+        content: 'Setiap elemen dalam HTML dianggap oleh browser sebagai sebuah kotak persegi panjang yang terdiri dari 4 lapisan berturut-turut dari dalam ke luar: Content → Padding → Border → Margin.'
       },
       {
         type: 'callout',

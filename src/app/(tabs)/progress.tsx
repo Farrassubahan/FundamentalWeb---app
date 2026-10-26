@@ -23,6 +23,7 @@ import { UserStats, QuizHistoryItem, Badge } from '@/types';
 import { getLevelInfo } from '@/services/gamification';
 import { GameButton } from '@/components/ui/GameButton';
 import { useResponsive } from '@/hooks/useResponsive';
+import { getLessonById } from '@/data/curriculum';
 
 export default function ProgressScreen() {
   const { contentMaxWidth, isTablet, isDesktop } = useResponsive();
@@ -193,7 +194,7 @@ export default function ProgressScreen() {
                   {badge.title}
                 </Text>
                 <Text style={styles.badgeStatus}>
-                  {isUnlocked ? '\u2714\ufe0f Terbuka' : 'Terkunci'}
+                  {isUnlocked ? '✔ Terbuka' : 'Terkunci'}
                 </Text>
               </TouchableOpacity>
             );
@@ -215,36 +216,42 @@ export default function ProgressScreen() {
           </View>
         ) : (
           <View style={styles.historyList}>
-            {history.slice(0, 10).map((item) => (
-              <View key={item.id} style={styles.historyItem}>
-                <View style={styles.historyScoreBox}>
-                  <Text
-                    style={[
-                      styles.historyScore,
-                      item.score >= 80
-                        ? { color: '#10B981' }
-                        : item.score >= 60
-                        ? { color: '#F59E0B' }
-                        : { color: '#EF4444' },
-                    ]}
-                  >
-                    {item.score}%
+            {history.slice(0, 10).map((item) => {
+              const lessonObj = getLessonById(item.lessonId);
+              const lessonTitle = lessonObj ? lessonObj.title : `Materi: ${item.lessonId}`;
+              return (
+                <View key={item.id} style={styles.historyItem}>
+                  <View style={styles.historyScoreBox}>
+                    <Text
+                      style={[
+                        styles.historyScore,
+                        item.score >= 80
+                          ? { color: '#10B981' }
+                          : item.score >= 60
+                          ? { color: '#F59E0B' }
+                          : { color: '#EF4444' },
+                      ]}
+                    >
+                      {item.score}%
+                    </Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.historyLessonId} numberOfLines={1}>
+                      {lessonTitle}
+                    </Text>
+                    <Text style={styles.historySub}>
+                      {item.totalQuestions} Soal • +{item.xpEarned} XP diperoleh
+                    </Text>
+                  </View>
+                  <Text style={styles.historyDate}>
+                    {new Date(item.timestamp).toLocaleDateString('id-ID', {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
                   </Text>
                 </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.historyLessonId}>Materi: {item.lessonId}</Text>
-                  <Text style={styles.historySub}>
-                    {item.totalQuestions} Soal \u2022 +{item.xpEarned} XP diperoleh
-                  </Text>
-                </View>
-                <Text style={styles.historyDate}>
-                  {new Date(item.timestamp).toLocaleDateString('id-ID', {
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                </Text>
-              </View>
-            ))}
+              );
+            })}
           </View>
         )}
         </View>

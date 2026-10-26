@@ -18,9 +18,66 @@ interface ProCodeEditorProps {
 
 // Quick insertion symbols grouped by language
 const SYMBOLS_BY_LANG: Record<'html' | 'css' | 'js', string[]> = {
-  html: ['<', '>', '</', '/>', '="', '"', 'class=""', 'id=""', 'div', 'p', 'h1', 'button', 'span', 'a'],
-  css: ['{', '}', ':', ';', '.', '#', 'px', '%', 'rem', 'color:', 'flex', 'margin:', 'padding:', 'width:'],
-  js: ['()', '{}', '=>', '===', '!==', ';', 'const ', 'let ', 'console.log(', 'function', 'if ()', 'return'],
+  html: [
+    '<div>',
+    '</div>',
+    '<h1>',
+    '</h1>',
+    '<p>',
+    '</p>',
+    '<button>',
+    '</button>',
+    '<span>',
+    '</span>',
+    'class=""',
+    'id=""',
+    'style=""',
+    'src=""',
+    'href=""',
+    '<',
+    '>',
+    '</',
+    '/>',
+    '="',
+    '"',
+  ],
+  css: [
+    '{',
+    '}',
+    ':',
+    ';',
+    '.',
+    '#',
+    'px',
+    '%',
+    'rem',
+    'color:',
+    'background:',
+    'display: flex;',
+    'padding:',
+    'margin:',
+    'border-radius:',
+    'font-size:',
+    'width:',
+    'height:',
+  ],
+  js: [
+    '()',
+    '{}',
+    '[]',
+    '=>',
+    '===',
+    '!==',
+    ';',
+    'const ',
+    'let ',
+    'console.log(',
+    'document.getElementById("',
+    'addEventListener("click", () => {',
+    'function',
+    'if ()',
+    'return',
+  ],
 };
 
 export const ProCodeEditor: React.FC<ProCodeEditorProps> = ({
@@ -54,22 +111,17 @@ export const ProCodeEditor: React.FC<ProCodeEditorProps> = ({
 
   const symbols = SYMBOLS_BY_LANG[language] || SYMBOLS_BY_LANG.html;
 
+  const langBadgeColor =
+    language === 'html' ? '#EA580C' : language === 'css' ? '#0284C7' : '#16A34A';
+
   return (
     <View style={styles.container}>
       {/* Editor Control Bar: File stats, Zoom font, Indent tab */}
       <View style={styles.topControlBar}>
         <View style={styles.statsRow}>
-          <View
-            style={[
-              styles.fileLangDot,
-              {
-                backgroundColor:
-                  language === 'html' ? '#EA580C' : language === 'css' ? '#0284C7' : '#16A34A',
-              },
-            ]}
-          />
-          <Text style={styles.statsText}>
-            {language.toUpperCase()} \u2022 {linesCount} Baris \u2022 {code.length} Karakter
+          <View style={[styles.fileLangDot, { backgroundColor: langBadgeColor }]} />
+          <Text style={styles.statsText} numberOfLines={1}>
+            {language.toUpperCase()} • {linesCount} Baris
           </Text>
         </View>
 
@@ -79,7 +131,7 @@ export const ProCodeEditor: React.FC<ProCodeEditorProps> = ({
             onPress={handleTabIndent}
             activeOpacity={0.7}
           >
-            <Text style={styles.controlBtnText}>Tab \u21e5</Text>
+            <Text style={styles.controlBtnText}>Tab ⇥</Text>
           </TouchableOpacity>
 
           <View style={styles.zoomCluster}>
@@ -87,16 +139,18 @@ export const ProCodeEditor: React.FC<ProCodeEditorProps> = ({
               style={styles.zoomBtn}
               onPress={() => changeFontSize(-1)}
               disabled={fontSize <= 11}
+              hitSlop={{ top: 6, bottom: 6, left: 6, right: 4 }}
             >
-              <Text style={styles.zoomBtnText}>A-</Text>
+              <Text style={[styles.zoomBtnText, fontSize <= 11 && styles.btnDisabled]}>A-</Text>
             </TouchableOpacity>
             <Text style={styles.fontSizeText}>{fontSize}px</Text>
             <TouchableOpacity
               style={styles.zoomBtn}
               onPress={() => changeFontSize(1)}
               disabled={fontSize >= 20}
+              hitSlop={{ top: 6, bottom: 6, left: 4, right: 6 }}
             >
-              <Text style={styles.zoomBtnText}>A+</Text>
+              <Text style={[styles.zoomBtnText, fontSize >= 20 && styles.btnDisabled]}>A+</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -108,13 +162,14 @@ export const ProCodeEditor: React.FC<ProCodeEditorProps> = ({
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.symbolsScroll}
+          keyboardShouldPersistTaps="always"
         >
           {symbols.map((sym, idx) => (
             <TouchableOpacity
-              key={idx}
+              key={`${language}-${idx}-${sym}`}
               onPress={() => handleInsertSymbol(sym)}
               style={styles.symbolChip}
-              activeOpacity={0.7}
+              activeOpacity={0.65}
             >
               <Text style={styles.symbolChipText}>{sym}</Text>
             </TouchableOpacity>
@@ -127,6 +182,7 @@ export const ProCodeEditor: React.FC<ProCodeEditorProps> = ({
         <ScrollView
           style={styles.editorScrollView}
           contentContainerStyle={styles.editorScrollContent}
+          keyboardShouldPersistTaps="handled"
         >
           <View style={styles.editorInnerRow}>
             {/* Line Numbers Gutter */}
@@ -231,6 +287,9 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#CBD5E1',
     fontWeight: '700',
+  },
+  btnDisabled: {
+    opacity: 0.3,
   },
   fontSizeText: {
     fontSize: 10,

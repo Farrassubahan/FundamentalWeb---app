@@ -8,6 +8,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
@@ -65,15 +66,32 @@ export default function ProjectDetailScreen() {
     loadSaved();
   }, [project]);
 
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/learn');
+    }
+  };
+
+  useEffect(() => {
+    const onBack = () => {
+      handleBack();
+      return true;
+    };
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBack);
+    return () => sub.remove();
+  }, []);
+
   if (!project) {
     return (
       <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
         <View style={styles.centerBox}>
           <Text style={styles.centerText}>Project tidak ditemukan.</Text>
           <GameButton
-            title="Kembali"
+            title="Kembali ke Roadmap"
             variant="outline"
-            onPress={() => router.back()}
+            onPress={handleBack}
           />
         </View>
       </SafeAreaView>
@@ -125,7 +143,7 @@ export default function ProjectDetailScreen() {
       {/* Header Bar */}
       <View style={styles.header}>
         <View style={{ maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center', flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+          <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
             <Ionicons name="arrow-back" size={24} color="#0F172A" />
           </TouchableOpacity>
 
@@ -264,14 +282,14 @@ export default function ProjectDetailScreen() {
 
           <View style={styles.actionBox}>
             <GameButton
-              title="Mulai Tulis Kode di Editor \u2192"
+              title="Mulai Tulis Kode di Editor →"
               variant="purple"
               size="lg"
               onPress={() => setActiveTab('editor')}
               style={{ width: '100%', marginBottom: 12 }}
             />
             <GameButton
-              title={isCompleted ? '\u2714\ufe0f Proyek Sudah Diselesaikan' : 'Submit & Nilai Proyek'}
+              title={isCompleted ? '✔ Proyek Sudah Diselesaikan' : 'Submit & Nilai Proyek'}
               variant="primary"
               size="lg"
               onPress={handleSubmit}
@@ -380,7 +398,7 @@ export default function ProjectDetailScreen() {
               style={{ flex: 1 }}
             />
             <GameButton
-              title="Submit Proyek \u2192"
+              title="Submit Proyek →"
               variant="primary"
               size="md"
               onPress={handleSubmit}

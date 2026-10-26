@@ -64,5 +64,9 @@ export const initDatabase = async (): Promise<void> => {
       completed INTEGER NOT NULL DEFAULT 0,
       completed_at TEXT
     );
+
+    CREATE INDEX IF NOT EXISTS idx_quiz_history_lesson ON quiz_history(lesson_id);
+    CREATE INDEX IF NOT EXISTS idx_quiz_history_timestamp ON quiz_history(timestamp);
+    CREATE INDEX IF NOT EXISTS idx_lesson_progress_status ON lesson_progress(status);
   `);
 };

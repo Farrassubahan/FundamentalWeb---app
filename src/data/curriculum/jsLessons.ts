@@ -209,7 +209,7 @@ export const JS_LESSONS: Lesson[] = [
     playgroundStarter: {
       html: '<h3>Kalkulator Luas Persegi Panjang</h3>\n<p id="hasil"></p>',
       css: 'body { font-family: sans-serif; padding: 20px; }',
-      js: 'const hitungLuas = (panjang, lebar) => panjang * lebar;\n\nconst p = 12;\nconst l = 5;\nconst luas = hitungLuas(p, l);\n\ndocument.getElementById("hasil").innerText = `Luas dengan p=${p} & l=${l} adalah ${luas} m\u00b2`;'
+      js: 'const hitungLuas = (panjang, lebar) => panjang * lebar;\n\nconst p = 12;\nconst l = 5;\nconst luas = hitungLuas(p, l);\n\ndocument.getElementById("hasil").innerText = `Luas dengan p=${p} & l=${l} adalah ${luas} m²`;'
     },
     content: [
       {
