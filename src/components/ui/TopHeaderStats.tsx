@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, Modal } from 'react-native';
+import { StyleSheet, View, Text, Modal, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { StatPill } from './StatPill';
 import { UserStats } from '@/types';
@@ -42,11 +42,11 @@ export const TopHeaderStats: React.FC<TopHeaderStatsProps> = ({
       <View style={styles.headerInner}>
         {/* Brand logo / title */}
         <View style={styles.brandRow}>
-          <View style={styles.logoBadge}>
-            <Text style={styles.logoBracket}>&lt;</Text>
-            <Text style={styles.logoText}>B</Text>
-            <Text style={styles.logoBracket}>/&gt;</Text>
-          </View>
+          <Image
+            source={require('@/assets/images/logo-app-web.png')}
+            style={styles.brandLogo}
+            resizeMode="contain"
+          />
           <Text style={styles.brandName}>Web Academy</Text>
         </View>
 
@@ -159,24 +159,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  logoBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#10B981',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 8,
-  },
-  logoBracket: {
-    color: '#D1FAE5',
-    fontWeight: '900',
-    fontSize: 12,
-  },
-  logoText: {
-    color: '#FFFFFF',
-    fontWeight: '900',
-    fontSize: 14,
-    marginHorizontal: 1,
+  brandLogo: {
+    width: 28,
+    height: 28,
+    borderRadius: 6,
   },
   brandName: {
     fontWeight: '800',

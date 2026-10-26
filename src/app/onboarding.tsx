@@ -68,7 +68,7 @@ export default function OnboardingScreen() {
           {/* Hero Header */}
           <View style={styles.heroBox}>
             <Image
-              source={require('@/assets/images/app-logo.png')}
+              source={require('@/assets/images/logo-app-web.png')}
               style={styles.heroLogo}
               resizeMode="contain"
             />

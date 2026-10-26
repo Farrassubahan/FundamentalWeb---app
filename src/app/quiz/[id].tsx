@@ -26,6 +26,9 @@ import { ProgressBar } from '@/components/ui/ProgressBar';
 import { GameButton } from '@/components/ui/GameButton';
 import { FeedbackBanner } from '@/components/ui/FeedbackBanner';
 import { CelebrationModal } from '@/components/ui/CelebrationModal';
+import { OutOfHeartsModal } from '@/components/ui/OutOfHeartsModal';
+import { RefillChallengeModal } from '@/components/ui/RefillChallengeModal';
+import { QuitConfirmModal } from '@/components/ui/QuitConfirmModal';
 import { evaluateAnswer, calculateQuizScore } from '@/services/quizEngine';
 import { checkAndAwardBadges } from '@/services/gamification';
 import { Question, UserStats, Badge } from '@/types';
@@ -58,33 +61,33 @@ export default function QuizScreen() {
   const [isLeveledUp, setIsLeveledUp] = useState(false);
   const [newLevelNum, setNewLevelNum] = useState(1);
 
+  // Duolingo out of hearts & refill challenge states
+  const [showOutOfHeartsModal, setShowOutOfHeartsModal] = useState(false);
+  const [showRefillChallenge, setShowRefillChallenge] = useState(false);
+  const [showQuitConfirmModal, setShowQuitConfirmModal] = useState(false);
+
   useEffect(() => {
     async function init() {
       const uStats = await getUserStats();
       setStats(uStats);
+      if (uStats.hearts <= 0) {
+        setShowOutOfHeartsModal(true);
+      }
     }
     init();
   }, []);
 
   const handleQuit = () => {
-    Alert.alert(
-      'Keluar dari Quiz?',
-      'Progres latihan saat ini tidak akan disimpan jika kamu keluar sekarang.',
-      [
-        { text: 'Lanjut Quiz', style: 'cancel' },
-        {
-          text: 'Keluar',
-          style: 'destructive',
-          onPress: () => {
-            if (router.canGoBack()) {
-              router.back();
-            } else {
-              router.replace('/(tabs)/learn');
-            }
-          },
-        },
-      ]
-    );
+    setShowQuitConfirmModal(true);
+  };
+
+  const handleConfirmQuit = () => {
+    setShowQuitConfirmModal(false);
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/learn');
+    }
   };
 
   useEffect(() => {
@@ -93,7 +96,7 @@ export default function QuizScreen() {
         router.replace('/(tabs)/learn');
         return true;
       }
-      handleQuit();
+      setShowQuitConfirmModal(true);
       return true;
     };
     const sub = BackHandler.addEventListener('hardwareBackPress', onBack);
@@ -120,7 +123,9 @@ export default function QuizScreen() {
 
   const currentQ: Question = lesson.questions[currentIdx];
   const progressPercent = Math.round(
-    ((currentIdx + (hasSubmitted ? 1 : 0)) / lesson.questions.length) * 100
+    ((currentIdx + (hasSubmitted && evaluation?.isCorrect ? 1 : 0)) /
+      lesson.questions.length) *
+      100
   );
 
   const handleCheckAnswer = async () => {
@@ -145,18 +150,30 @@ export default function QuizScreen() {
       // Deduct heart
       const remainingHearts = await deductHeart();
       setStats((prev) => (prev ? { ...prev, hearts: remainingHearts } : prev));
-
-      if (remainingHearts <= 0) {
-        Alert.alert(
-          'Hati Kamu Telah Habis!',
-          'Kamu kehilangan semua hati. Istirahat sejenak untuk regenerasi hati atau coba ulangi materi.',
-          [{ text: 'Kembali ke Materi', onPress: () => router.replace(`/lesson/${lesson.id}`) }]
-        );
-      }
     }
   };
 
   const handleNextStep = async () => {
+    if (!evaluation?.isCorrect) {
+      // Check if user has run out of hearts
+      if ((stats?.hearts ?? 0) <= 0) {
+        setShowOutOfHeartsModal(true);
+        return;
+      }
+
+      // DUOLINGO FLOW: User answered incorrectly, DO NOT advance!
+      // Stay on the same question, reset selection so they can retry.
+      setHasSubmitted(false);
+      setEvaluation(null);
+      setUserAnswer(null);
+
+      if (currentQ.type === 'order_lines' && currentQ.lines) {
+        setOrderedLines([...currentQ.lines].sort(() => Math.random() - 0.5));
+      }
+      return;
+    }
+
+    // User answered correctly -> Advance to next question or finish quiz
     if (currentIdx < lesson.questions.length - 1) {
       const nextIdx = currentIdx + 1;
       setCurrentIdx(nextIdx);
@@ -171,6 +188,35 @@ export default function QuizScreen() {
     } else {
       // Finish Quiz
       await finishQuiz();
+    }
+  };
+
+  const handleStartRefill = () => {
+    setShowOutOfHeartsModal(false);
+    setShowRefillChallenge(true);
+  };
+
+  const handleRefillSuccess = async () => {
+    const updatedStats = await getUserStats();
+    setStats(updatedStats);
+    setShowRefillChallenge(false);
+    setShowOutOfHeartsModal(false);
+
+    // Reset current question attempt so user can retry immediately with full hearts
+    setHasSubmitted(false);
+    setEvaluation(null);
+    setUserAnswer(null);
+    if (currentQ.type === 'order_lines' && currentQ.lines) {
+      setOrderedLines([...currentQ.lines].sort(() => Math.random() - 0.5));
+    }
+  };
+
+  const handleQuitFromOutOfHearts = () => {
+    setShowOutOfHeartsModal(false);
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/learn');
     }
   };
 
@@ -356,10 +402,18 @@ export default function QuizScreen() {
             />
           </View>
 
-          <View style={styles.heartPill}>
+          <TouchableOpacity
+            style={styles.heartPill}
+            activeOpacity={0.7}
+            onPress={() => {
+              if ((stats?.hearts ?? 5) < 5) {
+                setShowOutOfHeartsModal(true);
+              }
+            }}
+          >
             <Ionicons name="heart" size={18} color="#EF4444" />
             <Text style={styles.heartText}>{stats?.hearts ?? 5}</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -579,8 +633,39 @@ export default function QuizScreen() {
           explanation={evaluation.explanation}
           onNext={handleNextStep}
           isLastQuestion={currentIdx === lesson.questions.length - 1}
+          buttonTitle={
+            !evaluation.isCorrect
+              ? (stats?.hearts ?? 5) <= 0
+                ? '⚡ Isi Ulang Nyawa (+5 ❤️)'
+                : 'Coba Lagi'
+              : undefined
+          }
         />
       )}
+
+      {/* Duolingo Out of Hearts Modal */}
+      <OutOfHeartsModal
+        visible={showOutOfHeartsModal}
+        onStartRefill={handleStartRefill}
+        onQuit={handleQuitFromOutOfHearts}
+      />
+
+      {/* Refill Challenge Drill Modal */}
+      <RefillChallengeModal
+        visible={showRefillChallenge}
+        onClose={() => {
+          setShowRefillChallenge(false);
+          setShowOutOfHeartsModal(true);
+        }}
+        onSuccess={handleRefillSuccess}
+      />
+
+      {/* Interactive Quit Confirmation Modal */}
+      <QuitConfirmModal
+        visible={showQuitConfirmModal}
+        onConfirm={handleConfirmQuit}
+        onCancel={() => setShowQuitConfirmModal(false)}
+      />
     </SafeAreaView>
   );
 }

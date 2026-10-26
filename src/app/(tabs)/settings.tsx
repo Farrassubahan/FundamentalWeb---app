@@ -28,6 +28,8 @@ export default function SettingsScreen() {
   const [goal, setGoal] = useState('15');
   const [saving, setSaving] = useState(false);
   const [resetModalVisible, setResetModalVisible] = useState(false);
+  const [confirmNameModalVisible, setConfirmNameModalVisible] = useState(false);
+  const [successNameModalVisible, setSuccessNameModalVisible] = useState(false);
 
   const loadData = useCallback(async () => {
     try {
@@ -48,12 +50,15 @@ export default function SettingsScreen() {
     }, [loadData])
   );
 
-  const handleSaveProfile = async () => {
+  const handlePromptSaveProfile = () => {
     if (!name.trim()) {
       Alert.alert('Perhatian', 'Nama pengguna tidak boleh kosong!');
       return;
     }
+    setConfirmNameModalVisible(true);
+  };
 
+  const handleExecuteSave = async () => {
     setSaving(true);
     try {
       const updated = await saveUserProfile(
@@ -62,9 +67,13 @@ export default function SettingsScreen() {
         parseInt(goal, 10) || 15
       );
       setProfile(updated);
-      Alert.alert('Sukses', 'Profil berhasil diperbarui!');
+      setConfirmNameModalVisible(false);
+      setTimeout(() => {
+        setSuccessNameModalVisible(true);
+      }, 150);
     } catch {
-      Alert.alert('Error', 'Gagal memperbarui profil.');
+      setConfirmNameModalVisible(false);
+      Alert.alert('Gagal', 'Terjadi kesalahan saat memperbarui profil lokal.');
     } finally {
       setSaving(false);
     }
@@ -131,7 +140,7 @@ export default function SettingsScreen() {
             variant="primary"
             size="md"
             loading={saving}
-            onPress={handleSaveProfile}
+            onPress={handlePromptSaveProfile}
             style={{ marginTop: 8 }}
           />
         </View>
@@ -179,14 +188,14 @@ export default function SettingsScreen() {
         {/* App Info Footer */}
         <View style={styles.footerBox}>
           <Image
-            source={require('@/assets/images/app-logo.png')}
+            source={require('@/assets/images/logo-app-web.png')}
             style={styles.footerLogo}
             resizeMode="contain"
           />
           <Text style={styles.footerName}>BPROTIC Web Academy</Text>
-          <Text style={styles.footerVersion}>Versi 1.0.0 (Expo SDK 58)</Text>
-          <Text style={styles.footerCopy}>
-            &copy; 2026 BPROTIC Educational Labs. Offline-First Mobile Learning.
+          <Text style={styles.footerVersion}>Versi 1.0.0</Text>
+          <Text style={styles.footerCopy}> 
+            © 2026 BPROTIC Educational Labs.{'\n'}Offline-First Mobile Learning.
           </Text>
         </View>
         </View>
@@ -221,6 +230,85 @@ export default function SettingsScreen() {
               variant="outline"
               size="md"
               onPress={() => setResetModalVisible(false)}
+              style={{ width: '100%' }}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      {/* Confirmation Modal for Profile / Name Change */}
+      <Modal
+        visible={confirmNameModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setConfirmNameModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.confirmCard}>
+            <View style={styles.iconCircleBlue}>
+              <Ionicons name="person" size={38} color="#0284C7" />
+            </View>
+            <Text style={styles.confirmTitle}>Simpan Perubahan Nama?</Text>
+            <Text style={styles.confirmDesc}>
+              Perubahan nama akan langsung ditampilkan pada salam beranda, papan peringkat, dan sertifikat belajar.
+            </Text>
+
+            <View style={styles.previewChangeBox}>
+              <View style={styles.previewChangeRow}>
+                <Text style={styles.previewLabel}>Nama Sebelumnya:</Text>
+                <Text style={styles.previewOldText}>{profile?.name || '-'}</Text>
+              </View>
+              <View style={styles.previewDivider} />
+              <View style={styles.previewChangeRow}>
+                <Text style={styles.previewLabel}>Nama Baru:</Text>
+                <Text style={styles.previewNewText}>{name.trim()}</Text>
+              </View>
+            </View>
+
+            <GameButton
+              title="Ya, Simpan Nama"
+              variant="primary"
+              size="md"
+              loading={saving}
+              onPress={handleExecuteSave}
+              style={{ width: '100%', marginBottom: 10 }}
+            />
+            <GameButton
+              title="Batalkan"
+              variant="outline"
+              size="md"
+              onPress={() => setConfirmNameModalVisible(false)}
+              style={{ width: '100%' }}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      {/* Success Modal for Profile / Name Change */}
+      <Modal
+        visible={successNameModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setSuccessNameModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.confirmCard}>
+            <View style={styles.iconCircleGreen}>
+              <Ionicons name="checkmark-circle" size={42} color="#10B981" />
+            </View>
+            <View style={styles.pillBadgeGreen}>
+              <Text style={styles.pillBadgeGreenText}>BERHASIL DISIMPAN</Text>
+            </View>
+            <Text style={styles.confirmTitle}>Profil Berhasil Diperbarui!</Text>
+            <Text style={styles.confirmDesc}>
+              Halo, <Text style={{ fontWeight: '800', color: '#0F172A' }}>{profile?.name || name.trim()}</Text>! Nama barumu telah aktif dan tersimpan aman secara offline.
+            </Text>
+
+            <GameButton
+              title="Mantap, Lanjutkan!"
+              variant="primary"
+              size="md"
+              onPress={() => setSuccessNameModalVisible(false)}
               style={{ width: '100%' }}
             />
           </View>
@@ -384,5 +472,72 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 18,
     marginBottom: 20,
+  },
+  iconCircleBlue: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: '#E0F2FE',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  iconCircleGreen: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: '#DCFCE7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  pillBadgeGreen: {
+    backgroundColor: '#D1FAE5',
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 12,
+    marginBottom: 8,
+  },
+  pillBadgeGreenText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#065F46',
+    letterSpacing: 0.5,
+  },
+  previewChangeBox: {
+    width: '100%',
+    backgroundColor: '#F8FAFC',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    padding: 12,
+    marginBottom: 18,
+  },
+  previewChangeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 2,
+  },
+  previewLabel: {
+    fontSize: 12,
+    color: '#64748B',
+    fontWeight: '600',
+  },
+  previewOldText: {
+    fontSize: 13,
+    color: '#94A3B8',
+    fontWeight: '700',
+    textDecorationLine: 'line-through',
+  },
+  previewNewText: {
+    fontSize: 14,
+    color: '#0284C7',
+    fontWeight: '900',
+  },
+  previewDivider: {
+    height: 1,
+    backgroundColor: '#E2E8F0',
+    marginVertical: 6,
   },
 });

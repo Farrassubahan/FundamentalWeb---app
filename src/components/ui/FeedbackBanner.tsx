@@ -9,6 +9,7 @@ interface FeedbackBannerProps {
   explanation: string;
   onNext: () => void;
   isLastQuestion?: boolean;
+  buttonTitle?: string;
 }
 
 export const FeedbackBanner: React.FC<FeedbackBannerProps> = ({
@@ -17,12 +18,21 @@ export const FeedbackBanner: React.FC<FeedbackBannerProps> = ({
   explanation,
   onNext,
   isLastQuestion = false,
+  buttonTitle,
 }) => {
   const bg = isCorrect ? '#D1FAE5' : '#FEE2E2';
   const textColor = isCorrect ? '#065F46' : '#991B1B';
   const iconName = isCorrect ? 'checkmark-circle' : 'close-circle';
   const iconColor = isCorrect ? '#10B981' : '#EF4444';
   const title = isCorrect ? 'Luar Biasa! Benar!' : 'Kurang Tepat!';
+
+  const resolvedButtonTitle =
+    buttonTitle ||
+    (!isCorrect
+      ? 'Coba Lagi'
+      : isLastQuestion
+      ? 'Lihat Hasil Akhir →'
+      : 'Lanjutkan →');
 
   return (
     <View style={[styles.container, { backgroundColor: bg }]}>
@@ -40,7 +50,7 @@ export const FeedbackBanner: React.FC<FeedbackBannerProps> = ({
       </View>
 
       <GameButton
-        title={isLastQuestion ? 'Lihat Hasil Akhir →' : 'Lanjutkan →'}
+        title={resolvedButtonTitle}
         variant={isCorrect ? 'primary' : 'danger'}
         size="lg"
         onPress={onNext}
