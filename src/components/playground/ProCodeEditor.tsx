@@ -240,6 +240,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    flexShrink: 1,
   },
   fileLangDot: {
     width: 8,
@@ -251,6 +252,7 @@ const styles = StyleSheet.create({
     color: '#94A3B8',
     fontWeight: '700',
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    flexShrink: 1,
   },
   controlsCluster: {
     flexDirection: 'row',

@@ -7,6 +7,7 @@ import {
   ScrollView,
   Alert,
   Modal,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
@@ -177,6 +178,11 @@ export default function SettingsScreen() {
 
         {/* App Info Footer */}
         <View style={styles.footerBox}>
+          <Image
+            source={require('@/assets/images/app-logo.png')}
+            style={styles.footerLogo}
+            resizeMode="contain"
+          />
           <Text style={styles.footerName}>BPROTIC Web Academy</Text>
           <Text style={styles.footerVersion}>Versi 1.0.0 (Expo SDK 58)</Text>
           <Text style={styles.footerCopy}>
@@ -319,6 +325,11 @@ const styles = StyleSheet.create({
   footerBox: {
     alignItems: 'center',
     marginVertical: 16,
+  },
+  footerLogo: {
+    width: 60,
+    height: 60,
+    marginBottom: 8,
   },
   footerName: {
     fontSize: 14,

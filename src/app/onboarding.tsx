@@ -8,6 +8,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -66,6 +67,11 @@ export default function OnboardingScreen() {
         >
           {/* Hero Header */}
           <View style={styles.heroBox}>
+            <Image
+              source={require('@/assets/images/app-logo.png')}
+              style={styles.heroLogo}
+              resizeMode="contain"
+            />
             <View style={styles.badgeTop}>
               <Text style={styles.badgeTopText}>100% OFFLINE-FIRST</Text>
             </View>
@@ -206,6 +212,11 @@ const styles = StyleSheet.create({
   heroBox: {
     alignItems: 'center',
     marginVertical: 16,
+  },
+  heroLogo: {
+    width: 104,
+    height: 104,
+    marginBottom: 12,
   },
   badgeTop: {
     backgroundColor: '#D1FAE5',

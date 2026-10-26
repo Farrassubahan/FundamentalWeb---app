@@ -170,39 +170,32 @@ export default function PlaygroundScreen() {
           <View style={styles.brandBadge}>
             <Ionicons name="terminal" size={16} color="#10B981" />
           </View>
-          <View style={styles.titleWrapper}>
-            <Text style={styles.headerTitle} numberOfLines={1}>
-              Playground
-            </Text>
-            {width >= 370 && (
-              <View style={styles.ideTag}>
-                <Text style={styles.ideTagText}>Web IDE</Text>
-              </View>
-            )}
-          </View>
+          <Text style={styles.headerTitle} numberOfLines={1}>
+            Playground
+          </Text>
         </View>
 
         <View style={styles.headerActions}>
           <TouchableOpacity
-            style={styles.actionBtn}
+            style={[styles.actionBtn, isLargeScreen && styles.actionBtnLarge]}
             onPress={() => setTemplateModalVisible(true)}
             activeOpacity={0.75}
             accessibilityLabel="Pilih Template"
           >
             <Ionicons name="albums-outline" size={16} color="#38BDF8" />
-            {(isLargeScreen || width >= 410) && (
+            {isLargeScreen && (
               <Text style={styles.actionBtnText}>Template</Text>
             )}
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.actionBtn}
+            style={[styles.actionBtn, isLargeScreen && styles.actionBtnLarge]}
             onPress={handleReset}
             activeOpacity={0.75}
             accessibilityLabel="Reset Kode"
           >
             <Ionicons name="refresh-outline" size={16} color="#F87171" />
-            {(isLargeScreen || width >= 460) && (
+            {isLargeScreen && (
               <Text style={[styles.actionBtnText, { color: '#F87171' }]}>Reset</Text>
             )}
           </TouchableOpacity>
@@ -768,8 +761,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
     backgroundColor: '#0F172A',
     borderBottomWidth: 1,
     borderBottomColor: '#1E293B',
@@ -778,83 +771,72 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    flexShrink: 1,
   },
   brandBadge: {
-    width: 30,
-    height: 30,
+    width: 32,
+    height: 32,
     borderRadius: 8,
     backgroundColor: '#064E3B',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  titleWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
   headerTitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '900',
     color: '#F8FAFC',
-    letterSpacing: 0.2,
-  },
-  ideTag: {
-    backgroundColor: '#1E293B',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: '#334155',
-  },
-  ideTagText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: '#10B981',
+    letterSpacing: 0.3,
   },
   headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
   },
   actionBtn: {
-    flexDirection: 'row',
+    width: 36,
+    height: 36,
     alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#1E293B',
-    paddingHorizontal: 8,
-    paddingVertical: 6,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#334155',
-    gap: 4,
-    minHeight: 32,
-    justifyContent: 'center',
+  },
+  actionBtnLarge: {
+    width: 'auto',
+    flexDirection: 'row',
+    paddingHorizontal: 10,
+    gap: 6,
   },
   actionBtnText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '700',
     color: '#38BDF8',
   },
   resetBtnText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '700',
     color: '#F87171',
   },
   runBtn: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#10B981',
-    paddingHorizontal: 11,
-    paddingVertical: 6,
+    paddingHorizontal: 14,
+    height: 36,
     borderRadius: 8,
-    gap: 4,
-    minHeight: 32,
+    gap: 6,
     elevation: 2,
+    shadowColor: '#10B981',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
   runBtnText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '800',
     color: '#FFFFFF',
+    letterSpacing: 0.2,
   },
 
   /* Primary Navigation Bar (Segmented Control) */
