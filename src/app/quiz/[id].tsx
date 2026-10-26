@@ -3,12 +3,12 @@ import {
   StyleSheet,
   View,
   Text,
-  SafeAreaView,
   TouchableOpacity,
   ScrollView,
   TextInput,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { getLessonById, getNextLesson } from '@/data/curriculum';
@@ -28,8 +28,10 @@ import { CelebrationModal } from '@/components/ui/CelebrationModal';
 import { evaluateAnswer, calculateQuizScore } from '@/services/quizEngine';
 import { checkAndAwardBadges } from '@/services/gamification';
 import { Question, UserStats, Badge } from '@/types';
+import { useResponsive } from '@/hooks/useResponsive';
 
 export default function QuizScreen() {
+  const { contentMaxWidth } = useResponsive();
   const { id } = useLocalSearchParams<{ id: string }>();
   const lesson = getLessonById(id || '');
 
@@ -65,7 +67,7 @@ export default function QuizScreen() {
 
   if (!lesson || !lesson.questions.length) {
     return (
-      <SafeAreaView style={styles.safe}>
+      <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
         <View style={styles.centerBox}>
           <Text style={styles.centerText}>Tidak ada soal evaluasi untuk materi ini.</Text>
           <GameButton
@@ -202,7 +204,7 @@ export default function QuizScreen() {
     const passed = scoreInfo.passed;
 
     return (
-      <SafeAreaView style={styles.safe}>
+      <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
         <View style={styles.finishedContainer}>
           <View
             style={[
@@ -295,25 +297,27 @@ export default function QuizScreen() {
 
   // ----------------- RENDER QUESTION STATE -----------------
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
       {/* Top Bar: Quit, Progress, Hearts */}
       <View style={styles.topBar}>
-        <TouchableOpacity onPress={handleQuit} style={styles.quitBtn}>
-          <Ionicons name="close" size={26} color="#64748B" />
-        </TouchableOpacity>
+        <View style={{ maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <TouchableOpacity onPress={handleQuit} style={styles.quitBtn}>
+            <Ionicons name="close" size={26} color="#64748B" />
+          </TouchableOpacity>
 
-        <View style={styles.progressBox}>
-          <ProgressBar
-            progress={progressPercent}
-            color="#10B981"
-            height={12}
-            style={{ flex: 1 }}
-          />
-        </View>
+          <View style={styles.progressBox}>
+            <ProgressBar
+              progress={progressPercent}
+              color="#10B981"
+              height={12}
+              style={{ flex: 1 }}
+            />
+          </View>
 
-        <View style={styles.heartPill}>
-          <Ionicons name="heart" size={18} color="#EF4444" />
-          <Text style={styles.heartText}>{stats?.hearts ?? 5}</Text>
+          <View style={styles.heartPill}>
+            <Ionicons name="heart" size={18} color="#EF4444" />
+            <Text style={styles.heartText}>{stats?.hearts ?? 5}</Text>
+          </View>
         </View>
       </View>
 
@@ -321,6 +325,7 @@ export default function QuizScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        <View style={{ maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center' }}>
         {/* Question Prompt */}
         <Text style={styles.prompt}>{currentQ.prompt}</Text>
 
@@ -508,19 +513,22 @@ export default function QuizScreen() {
             })}
           </View>
         )}
+        </View>
       </ScrollView>
 
       {/* Footer Area: Submit Button OR Feedback Banner */}
       {!hasSubmitted ? (
         <View style={styles.footerBar}>
-          <GameButton
-            title="Periksa Jawaban"
-            variant="primary"
-            size="lg"
-            disabled={userAnswer === null || userAnswer === undefined || userAnswer === ''}
-            onPress={handleCheckAnswer}
-            style={{ width: '100%' }}
-          />
+          <View style={{ maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center' }}>
+            <GameButton
+              title="Periksa Jawaban"
+              variant="primary"
+              size="lg"
+              disabled={userAnswer === null || userAnswer === undefined || userAnswer === ''}
+              onPress={handleCheckAnswer}
+              style={{ width: '100%' }}
+            />
+          </View>
         </View>
       ) : (
         <FeedbackBanner

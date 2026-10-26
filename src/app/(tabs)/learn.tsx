@@ -4,10 +4,10 @@ import {
   View,
   Text,
   ScrollView,
-  SafeAreaView,
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { TopHeaderStats } from '@/components/ui/TopHeaderStats';
@@ -24,8 +24,10 @@ import {
 } from '@/data/curriculum';
 import { UserStats, LessonProgress, WorldId, Lesson, WebProject } from '@/types';
 import { WorldColors } from '@/constants/theme';
+import { useResponsive } from '@/hooks/useResponsive';
 
 export default function LearnScreen() {
+  const { contentMaxWidth } = useResponsive();
   const [activeWorld, setActiveWorld] = useState<WorldId>('html');
   const [stats, setStats] = useState<UserStats | null>(null);
   const [progressMap, setProgressMap] = useState<Record<string, LessonProgress>>({});
@@ -87,7 +89,7 @@ export default function LearnScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
       <TopHeaderStats stats={stats} onRefreshStats={loadData} />
 
       {/* World Selector Tabs */}
@@ -135,6 +137,7 @@ export default function LearnScreen() {
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
       >
+        <View style={{ maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center' }}>
         {/* World Header Card */}
         <View style={[styles.worldHeaderCard, { backgroundColor: worldTheme.light, borderColor: worldTheme.primary }]}>
           <View style={styles.worldHeaderRow}>
@@ -244,6 +247,7 @@ export default function LearnScreen() {
             ))}
           </View>
         )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

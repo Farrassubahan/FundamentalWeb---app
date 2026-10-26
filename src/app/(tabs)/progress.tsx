@@ -4,10 +4,10 @@ import {
   View,
   Text,
   ScrollView,
-  SafeAreaView,
   TouchableOpacity,
   Modal,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { TopHeaderStats } from '@/components/ui/TopHeaderStats';
@@ -22,8 +22,11 @@ import { INITIAL_BADGES } from '@/constants/badges';
 import { UserStats, QuizHistoryItem, Badge } from '@/types';
 import { getLevelInfo } from '@/services/gamification';
 import { GameButton } from '@/components/ui/GameButton';
+import { useResponsive } from '@/hooks/useResponsive';
 
 export default function ProgressScreen() {
+  const { contentMaxWidth, isTablet, isDesktop } = useResponsive();
+  const isLarge = isTablet || isDesktop;
   const [stats, setStats] = useState<UserStats | null>(null);
   const [history, setHistory] = useState<QuizHistoryItem[]>([]);
   const [unlockedIds, setUnlockedIds] = useState<Set<string>>(new Set());
@@ -64,13 +67,14 @@ export default function ProgressScreen() {
   ).length;
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
       <TopHeaderStats stats={stats} onRefreshStats={loadData} />
 
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
       >
+        <View style={{ maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center' }}>
         {/* Level & XP Overview Card */}
         <View style={styles.levelCard}>
           <View style={styles.levelHeader}>
@@ -163,6 +167,7 @@ export default function ProgressScreen() {
                 onPress={() => setSelectedBadge(badge)}
                 style={[
                   styles.badgeCard,
+                  isLarge && { width: '23.5%' },
                   isUnlocked ? styles.badgeCardUnlocked : styles.badgeCardLocked,
                 ]}
               >
@@ -242,6 +247,7 @@ export default function ProgressScreen() {
             ))}
           </View>
         )}
+        </View>
       </ScrollView>
 
       {/* Badge Details Modal */}

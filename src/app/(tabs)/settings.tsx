@@ -5,10 +5,10 @@ import {
   Text,
   TextInput,
   ScrollView,
-  SafeAreaView,
   Alert,
   Modal,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import {
@@ -18,8 +18,10 @@ import {
 } from '@/database/repository';
 import { UserProfile } from '@/types';
 import { GameButton } from '@/components/ui/GameButton';
+import { useResponsive } from '@/hooks/useResponsive';
 
 export default function SettingsScreen() {
+  const { contentMaxWidth } = useResponsive();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [name, setName] = useState('');
   const [goal, setGoal] = useState('15');
@@ -83,16 +85,19 @@ export default function SettingsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
       <View style={styles.header}>
-        <Ionicons name="settings" size={20} color="#0F172A" />
-        <Text style={styles.headerTitle}>Pengaturan & Akun</Text>
+        <View style={{ maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Ionicons name="settings" size={20} color="#0F172A" />
+          <Text style={styles.headerTitle}>Pengaturan & Akun</Text>
+        </View>
       </View>
 
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
       >
+        <View style={{ maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center' }}>
         {/* Profile Edit Card */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Profil Pengguna</Text>
@@ -177,6 +182,7 @@ export default function SettingsScreen() {
           <Text style={styles.footerCopy}>
             &copy; 2026 BPROTIC Educational Labs. Offline-First Mobile Learning.
           </Text>
+        </View>
         </View>
       </ScrollView>
 

@@ -4,10 +4,10 @@ import {
   View,
   Text,
   ScrollView,
-  SafeAreaView,
   TouchableOpacity,
   RefreshControl,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { TopHeaderStats } from '@/components/ui/TopHeaderStats';
@@ -21,6 +21,7 @@ import {
 import { ALL_LESSONS, WORLDS_META } from '@/data/curriculum';
 import { UserProfile, UserStats, LessonProgress, Lesson } from '@/types';
 import { getLevelInfo } from '@/services/gamification';
+import { useResponsive } from '@/hooks/useResponsive';
 
 export default function DashboardScreen() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -74,8 +75,11 @@ export default function DashboardScreen() {
     (p) => p.status === 'completed'
   ).length;
 
+  const { contentMaxWidth, isTablet, isDesktop } = useResponsive();
+  const isLarge = isTablet || isDesktop;
+
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
       <TopHeaderStats stats={stats} onRefreshStats={loadData} />
 
       <ScrollView
@@ -85,157 +89,163 @@ export default function DashboardScreen() {
         }
         showsVerticalScrollIndicator={false}
       >
-        {/* Welcome Greeting & Level Header */}
-        <View style={styles.greetingCard}>
-          <View style={styles.greetingHeader}>
-            <View>
-              <Text style={styles.greetingSmall}>Selamat Belajar,</Text>
-              <Text style={styles.greetingName}>{profile?.name ?? 'Web Developer'}</Text>
+        <View style={{ maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center' }}>
+          {/* Welcome Greeting & Level Header */}
+          <View style={styles.greetingCard}>
+            <View style={styles.greetingHeader}>
+              <View>
+                <Text style={styles.greetingSmall}>Selamat Belajar,</Text>
+                <Text style={styles.greetingName}>{profile?.name ?? 'Web Developer'}</Text>
+              </View>
+              <View style={styles.levelBadge}>
+                <Ionicons name="ribbon" size={16} color="#7C3AED" />
+                <Text style={styles.levelBadgeText}>Level {levelInfo.level}</Text>
+              </View>
             </View>
-            <View style={styles.levelBadge}>
-              <Ionicons name="ribbon" size={16} color="#7C3AED" />
-              <Text style={styles.levelBadgeText}>Level {levelInfo.level}</Text>
+
+            {/* Level Progress */}
+            <View style={styles.levelProgressBox}>
+              <View style={styles.levelProgressInfo}>
+                <Text style={styles.levelProgressLabel}>Progres ke Level {levelInfo.level + 1}</Text>
+                <Text style={styles.levelProgressVal}>
+                  {levelInfo.currentLevelXp} / {levelInfo.nextLevelXp} XP
+                </Text>
+              </View>
+              <ProgressBar progress={levelInfo.progressPercent} color="#7C3AED" height={10} />
             </View>
           </View>
 
-          {/* Level Progress */}
-          <View style={styles.levelProgressBox}>
-            <View style={styles.levelProgressInfo}>
-              <Text style={styles.levelProgressLabel}>Progres ke Level {levelInfo.level + 1}</Text>
-              <Text style={styles.levelProgressVal}>
-                {levelInfo.currentLevelXp} / {levelInfo.nextLevelXp} XP
+          {/* Quick Continue Lesson Card */}
+          {currentLesson && (
+            <View style={styles.continueCard}>
+              <View style={styles.continueBadgeRow}>
+                <View style={styles.continuePill}>
+                  <Text style={styles.continuePillText}>LANJUTKAN BELAJAR</Text>
+                </View>
+                <View style={styles.xpPill}>
+                  <Ionicons name="star" size={12} color="#D97706" />
+                  <Text style={styles.xpPillText}>+{currentLesson.xpReward} XP</Text>
+                </View>
+              </View>
+
+              <Text style={styles.continueWorld}>{currentLesson.worldTitle}</Text>
+              <Text style={styles.continueTitle}>{currentLesson.title}</Text>
+              <Text style={styles.continueDesc} numberOfLines={2}>
+                {currentLesson.description}
+              </Text>
+
+              <View style={styles.continueActionRow}>
+                <GameButton
+                  title="Mulai Materi \u2192"
+                  variant="primary"
+                  size="md"
+                  onPress={() => router.push(`/lesson/${currentLesson.id}`)}
+                  style={{ flex: 1 }}
+                />
+              </View>
+            </View>
+          )}
+
+          {/* Worlds Learning Roadmap Overview */}
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>4 Dunia Web Programming</Text>
+            <TouchableOpacity onPress={() => router.push('/(tabs)/learn')}>
+              <Text style={styles.sectionLink}>Buka Roadmap \u2192</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={[styles.worldsGrid, isLarge && styles.worldsGridLarge]}>
+            {WORLDS_META.map((w) => {
+              const worldLessons = ALL_LESSONS.filter((l) => l.worldId === w.id);
+              const total = worldLessons.length || (w.id === 'projects' ? 4 : 1);
+              const done = worldLessons.filter(
+                (l) => progressMap[l.id]?.status === 'completed'
+              ).length;
+              const percent = Math.round((done / total) * 100);
+
+              const getColor = () => {
+                switch (w.id) {
+                  case 'html':
+                    return { bg: '#FFEDD5', border: '#EA580C', text: '#9A3412', icon: '#EA580C' };
+                  case 'css':
+                    return { bg: '#E0F2FE', border: '#0284C7', text: '#075985', icon: '#0284C7' };
+                  case 'javascript':
+                    return { bg: '#DCFCE7', border: '#16A34A', text: '#166534', icon: '#16A34A' };
+                  case 'projects':
+                  default:
+                    return { bg: '#EDE9FE', border: '#7C3AED', text: '#5B21B6', icon: '#7C3AED' };
+                }
+              };
+              const col = getColor();
+
+              return (
+                <TouchableOpacity
+                  key={w.id}
+                  activeOpacity={0.8}
+                  onPress={() => router.push('/(tabs)/learn')}
+                  style={[
+                    styles.worldCard,
+                    isLarge && styles.worldCardLarge,
+                    { borderColor: col.border + '40' },
+                  ]}
+                >
+                  <View style={styles.worldCardTop}>
+                    <View style={[styles.worldIconCircle, { backgroundColor: col.bg }]}>
+                      <Ionicons
+                        name={w.icon as keyof typeof Ionicons.glyphMap}
+                        size={22}
+                        color={col.icon}
+                      />
+                    </View>
+                    <Text style={styles.worldProgressText}>{done}/{total} Selesai</Text>
+                  </View>
+
+                  <Text style={styles.worldTitle}>{w.title}</Text>
+                  <Text style={styles.worldTagline}>{w.tagline}</Text>
+
+                  <ProgressBar progress={percent} color={col.icon} height={8} style={{ marginTop: 8 }} />
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {/* Offline Playground Banner */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => router.push('/(tabs)/playground')}
+            style={styles.playgroundBanner}
+          >
+            <View style={styles.playgroundBannerText}>
+              <View style={styles.bannerPill}>
+                <Text style={styles.bannerPillText}>OFFLINE PLAYGROUND</Text>
+              </View>
+              <Text style={styles.playgroundBannerTitle}>Coba Kode HTML, CSS & JS</Text>
+              <Text style={styles.playgroundBannerDesc}>
+                Eksperimen langsung di browser WebView lokal tanpa perlu server eksternal.
               </Text>
             </View>
-            <ProgressBar progress={levelInfo.progressPercent} color="#7C3AED" height={10} />
-          </View>
-        </View>
-
-        {/* Quick Continue Lesson Card */}
-        {currentLesson && (
-          <View style={styles.continueCard}>
-            <View style={styles.continueBadgeRow}>
-              <View style={styles.continuePill}>
-                <Text style={styles.continuePillText}>LANJUTKAN BELAJAR</Text>
-              </View>
-              <View style={styles.xpPill}>
-                <Ionicons name="star" size={12} color="#D97706" />
-                <Text style={styles.xpPillText}>+{currentLesson.xpReward} XP</Text>
-              </View>
+            <View style={styles.playgroundBannerIcon}>
+              <Ionicons name="code-slash" size={32} color="#0284C7" />
             </View>
-
-            <Text style={styles.continueWorld}>{currentLesson.worldTitle}</Text>
-            <Text style={styles.continueTitle}>{currentLesson.title}</Text>
-            <Text style={styles.continueDesc} numberOfLines={2}>
-              {currentLesson.description}
-            </Text>
-
-            <View style={styles.continueActionRow}>
-              <GameButton
-                title="Mulai Materi \u2192"
-                variant="primary"
-                size="md"
-                onPress={() => router.push(`/lesson/${currentLesson.id}`)}
-                style={{ flex: 1 }}
-              />
-            </View>
-          </View>
-        )}
-
-        {/* Worlds Learning Roadmap Overview */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>4 Dunia Web Programming</Text>
-          <TouchableOpacity onPress={() => router.push('/(tabs)/learn')}>
-            <Text style={styles.sectionLink}>Buka Roadmap \u2192</Text>
           </TouchableOpacity>
-        </View>
 
-        <View style={styles.worldsGrid}>
-          {WORLDS_META.map((w) => {
-            const worldLessons = ALL_LESSONS.filter((l) => l.worldId === w.id);
-            const total = worldLessons.length || (w.id === 'projects' ? 4 : 1);
-            const done = worldLessons.filter(
-              (l) => progressMap[l.id]?.status === 'completed'
-            ).length;
-            const percent = Math.round((done / total) * 100);
-
-            const getColor = () => {
-              switch (w.id) {
-                case 'html':
-                  return { bg: '#FFEDD5', border: '#EA580C', text: '#9A3412', icon: '#EA580C' };
-                case 'css':
-                  return { bg: '#E0F2FE', border: '#0284C7', text: '#075985', icon: '#0284C7' };
-                case 'javascript':
-                  return { bg: '#DCFCE7', border: '#16A34A', text: '#166534', icon: '#16A34A' };
-                case 'projects':
-                default:
-                  return { bg: '#EDE9FE', border: '#7C3AED', text: '#5B21B6', icon: '#7C3AED' };
-              }
-            };
-            const col = getColor();
-
-            return (
-              <TouchableOpacity
-                key={w.id}
-                activeOpacity={0.8}
-                onPress={() => router.push('/(tabs)/learn')}
-                style={[styles.worldCard, { borderColor: col.border + '40' }]}
-              >
-                <View style={styles.worldCardTop}>
-                  <View style={[styles.worldIconCircle, { backgroundColor: col.bg }]}>
-                    <Ionicons
-                      name={w.icon as keyof typeof Ionicons.glyphMap}
-                      size={22}
-                      color={col.icon}
-                    />
-                  </View>
-                  <Text style={styles.worldProgressText}>{done}/{total} Selesai</Text>
-                </View>
-
-                <Text style={styles.worldTitle}>{w.title}</Text>
-                <Text style={styles.worldTagline}>{w.tagline}</Text>
-
-                <ProgressBar progress={percent} color={col.icon} height={8} style={{ marginTop: 8 }} />
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
-        {/* Offline Playground Banner */}
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => router.push('/(tabs)/playground')}
-          style={styles.playgroundBanner}
-        >
-          <View style={styles.playgroundBannerText}>
-            <View style={styles.bannerPill}>
-              <Text style={styles.bannerPillText}>OFFLINE PLAYGROUND</Text>
+          {/* Quick Stats Grid */}
+          <View style={styles.statsSummaryGrid}>
+            <View style={styles.statSummaryCard}>
+              <Ionicons name="checkmark-done-circle" size={24} color="#10B981" />
+              <Text style={styles.statSummaryVal}>{completedLessonsCount}</Text>
+              <Text style={styles.statSummaryLabel}>Materi Tuntas</Text>
             </View>
-            <Text style={styles.playgroundBannerTitle}>Coba Kode HTML, CSS & JS</Text>
-            <Text style={styles.playgroundBannerDesc}>
-              Eksperimen langsung di browser WebView lokal tanpa perlu server eksternal.
-            </Text>
-          </View>
-          <View style={styles.playgroundBannerIcon}>
-            <Ionicons name="code-slash" size={32} color="#0284C7" />
-          </View>
-        </TouchableOpacity>
-
-        {/* Quick Stats Grid */}
-        <View style={styles.statsSummaryGrid}>
-          <View style={styles.statSummaryCard}>
-            <Ionicons name="checkmark-done-circle" size={24} color="#10B981" />
-            <Text style={styles.statSummaryVal}>{completedLessonsCount}</Text>
-            <Text style={styles.statSummaryLabel}>Materi Tuntas</Text>
-          </View>
-          <View style={styles.statSummaryCard}>
-            <Ionicons name="flame" size={24} color="#F97316" />
-            <Text style={styles.statSummaryVal}>{stats?.streak ?? 1} Hari</Text>
-            <Text style={styles.statSummaryLabel}>Streak Aktif</Text>
-          </View>
-          <View style={styles.statSummaryCard}>
-            <Ionicons name="star" size={24} color="#F59E0B" />
-            <Text style={styles.statSummaryVal}>{stats?.xp ?? 0}</Text>
-            <Text style={styles.statSummaryLabel}>Total XP</Text>
+            <View style={styles.statSummaryCard}>
+              <Ionicons name="flame" size={24} color="#F97316" />
+              <Text style={styles.statSummaryVal}>{stats?.streak ?? 1} Hari</Text>
+              <Text style={styles.statSummaryLabel}>Streak Aktif</Text>
+            </View>
+            <View style={styles.statSummaryCard}>
+              <Ionicons name="star" size={24} color="#F59E0B" />
+              <Text style={styles.statSummaryVal}>{stats?.xp ?? 0}</Text>
+              <Text style={styles.statSummaryLabel}>Total XP</Text>
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -394,6 +404,11 @@ const styles = StyleSheet.create({
     gap: 12,
     marginBottom: 20,
   },
+  worldsGridLarge: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
   worldCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
@@ -401,6 +416,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderBottomWidth: 4,
     borderBottomColor: '#CBD5E1',
+  },
+  worldCardLarge: {
+    width: '48.5%',
   },
   worldCardTop: {
     flexDirection: 'row',

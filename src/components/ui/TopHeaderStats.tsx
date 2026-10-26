@@ -39,37 +39,39 @@ export const TopHeaderStats: React.FC<TopHeaderStatsProps> = ({
 
   return (
     <View style={styles.header}>
-      {/* Brand logo / title */}
-      <View style={styles.brandRow}>
-        <View style={styles.logoBadge}>
-          <Text style={styles.logoBracket}>&lt;</Text>
-          <Text style={styles.logoText}>B</Text>
-          <Text style={styles.logoBracket}>/&gt;</Text>
+      <View style={styles.headerInner}>
+        {/* Brand logo / title */}
+        <View style={styles.brandRow}>
+          <View style={styles.logoBadge}>
+            <Text style={styles.logoBracket}>&lt;</Text>
+            <Text style={styles.logoText}>B</Text>
+            <Text style={styles.logoBracket}>/&gt;</Text>
+          </View>
+          <Text style={styles.brandName}>Web Academy</Text>
         </View>
-        <Text style={styles.brandName}>Web Academy</Text>
-      </View>
 
-      {/* Stats cluster */}
-      <View style={styles.statsCluster}>
-        <StatPill
-          icon="flame"
-          value={streak}
-          color="#EA580C"
-          bgColor="#FFEDD5"
-        />
-        <StatPill
-          icon="star"
-          value={xp}
-          color="#D97706"
-          bgColor="#FEF3C7"
-        />
-        <StatPill
-          icon="heart"
-          value={`${hearts}/${maxHearts}`}
-          color="#DC2626"
-          bgColor="#FEE2E2"
-          onPress={() => setHeartModalVisible(true)}
-        />
+        {/* Stats cluster */}
+        <View style={styles.statsCluster}>
+          <StatPill
+            icon="flame"
+            value={streak}
+            color="#EA580C"
+            bgColor="#FFEDD5"
+          />
+          <StatPill
+            icon="star"
+            value={xp}
+            color="#D97706"
+            bgColor="#FEF3C7"
+          />
+          <StatPill
+            icon="heart"
+            value={`${hearts}/${maxHearts}`}
+            color="#DC2626"
+            bgColor="#FEE2E2"
+            onPress={() => setHeartModalVisible(true)}
+          />
+        </View>
       </View>
 
       {/* Heart Info Modal */}
@@ -138,14 +140,19 @@ export const TopHeaderStats: React.FC<TopHeaderStatsProps> = ({
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 10,
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#F1F5F9',
+  },
+  headerInner: {
+    maxWidth: 1040,
+    width: '100%',
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   brandRow: {
     flexDirection: 'row',

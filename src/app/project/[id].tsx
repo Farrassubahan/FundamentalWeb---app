@@ -4,13 +4,12 @@ import {
   View,
   Text,
   ScrollView,
-  SafeAreaView,
   TouchableOpacity,
-  TextInput,
   Alert,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { getProjectById } from '@/data/curriculum';
@@ -23,10 +22,13 @@ import {
 import { checkAndAwardBadges } from '@/services/gamification';
 import { GameButton } from '@/components/ui/GameButton';
 import { LocalCodeRunner } from '@/components/playground/LocalCodeRunner';
+import { ProCodeEditor } from '@/components/playground/ProCodeEditor';
 import { CelebrationModal } from '@/components/ui/CelebrationModal';
+import { useResponsive } from '@/hooks/useResponsive';
 import { Badge } from '@/types';
 
 export default function ProjectDetailScreen() {
+  const { contentMaxWidth } = useResponsive();
   const { id } = useLocalSearchParams<{ id: string }>();
   const project = getProjectById(id || '');
 
@@ -65,7 +67,7 @@ export default function ProjectDetailScreen() {
 
   if (!project) {
     return (
-      <SafeAreaView style={styles.safe}>
+      <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
         <View style={styles.centerBox}>
           <Text style={styles.centerText}>Project tidak ditemukan.</Text>
           <GameButton
@@ -119,23 +121,25 @@ export default function ProjectDetailScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
       {/* Header Bar */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={24} color="#0F172A" />
-        </TouchableOpacity>
+        <View style={{ maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center', flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+            <Ionicons name="arrow-back" size={24} color="#0F172A" />
+          </TouchableOpacity>
 
-        <View style={{ flex: 1, marginHorizontal: 8 }}>
-          <Text style={styles.projectCategory}>Mini Project Web</Text>
-          <Text style={styles.projectTitle} numberOfLines={1}>
-            {project.title}
-          </Text>
-        </View>
+          <View style={{ flex: 1, marginHorizontal: 8 }}>
+            <Text style={styles.projectCategory}>Mini Project Web</Text>
+            <Text style={styles.projectTitle} numberOfLines={1}>
+              {project.title}
+            </Text>
+          </View>
 
-        <View style={styles.xpPill}>
-          <Ionicons name="star" size={14} color="#D97706" />
-          <Text style={styles.xpText}>+{project.xpReward} XP</Text>
+          <View style={styles.xpPill}>
+            <Ionicons name="star" size={14} color="#D97706" />
+            <Text style={styles.xpText}>+{project.xpReward} XP</Text>
+          </View>
         </View>
       </View>
 
@@ -205,6 +209,7 @@ export default function ProjectDetailScreen() {
           contentContainerStyle={styles.scroll}
           showsVerticalScrollIndicator={false}
         >
+          <View style={{ maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center' }}>
           <View style={styles.card}>
             <Text style={styles.cardHeader}>Deskripsi Proyek</Text>
             <Text style={styles.descText}>{project.description}</Text>
@@ -273,6 +278,7 @@ export default function ProjectDetailScreen() {
               style={{ width: '100%' }}
             />
           </View>
+          </View>
         </ScrollView>
       )}
 
@@ -288,7 +294,7 @@ export default function ProjectDetailScreen() {
               onPress={() => setEditorLang('html')}
               style={[
                 styles.editorSubTab,
-                editorLang === 'html' && { borderBottomColor: '#EA580C' },
+                editorLang === 'html' && { borderBottomColor: '#EA580C', backgroundColor: '#1E1B18' },
               ]}
             >
               <Text
@@ -305,7 +311,7 @@ export default function ProjectDetailScreen() {
               onPress={() => setEditorLang('css')}
               style={[
                 styles.editorSubTab,
-                editorLang === 'css' && { borderBottomColor: '#0284C7' },
+                editorLang === 'css' && { borderBottomColor: '#0284C7', backgroundColor: '#121E2C' },
               ]}
             >
               <Text
@@ -322,7 +328,7 @@ export default function ProjectDetailScreen() {
               onPress={() => setEditorLang('js')}
               style={[
                 styles.editorSubTab,
-                editorLang === 'js' && { borderBottomColor: '#16A34A' },
+                editorLang === 'js' && { borderBottomColor: '#16A34A', backgroundColor: '#13211B' },
               ]}
             >
               <Text
@@ -337,24 +343,19 @@ export default function ProjectDetailScreen() {
 
             <TouchableOpacity style={styles.editorRunBtn} onPress={handleRun}>
               <Ionicons name="play" size={14} color="#FFFFFF" />
-              <Text style={styles.editorRunText}>Run</Text>
+              <Text style={styles.editorRunText}>Uji Preview</Text>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.editorInputContainer}>
-            <TextInput
-              style={styles.editorInput}
-              multiline={true}
-              value={editorLang === 'html' ? htmlCode : editorLang === 'css' ? cssCode : jsCode}
-              onChangeText={(text) => {
+          <View style={{ flex: 1, padding: 8, backgroundColor: '#090D16' }}>
+            <ProCodeEditor
+              code={editorLang === 'html' ? htmlCode : editorLang === 'css' ? cssCode : jsCode}
+              onChangeCode={(text) => {
                 if (editorLang === 'html') setHtmlCode(text);
                 else if (editorLang === 'css') setCssCode(text);
                 else setJsCode(text);
               }}
-              autoCapitalize="none"
-              autoCorrect={false}
-              spellCheck={false}
-              placeholderTextColor="#64748B"
+              language={editorLang}
             />
           </View>
         </KeyboardAvoidingView>

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
 import { WebView } from 'react-native-webview';
 
 interface LocalCodeRunnerProps {
@@ -83,6 +83,19 @@ export const LocalCodeRunner: React.FC<LocalCodeRunnerProps> = ({
 </body>
 </html>`;
   }, [htmlCode, cssCode, jsCode]);
+
+  if (Platform.OS === 'web') {
+    return (
+      <View style={styles.container}>
+        <iframe
+          srcDoc={bundledHtml}
+          style={{ width: '100%', height: '100%', border: 'none', backgroundColor: '#ffffff' }}
+          sandbox="allow-scripts"
+          title="code-preview"
+        />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

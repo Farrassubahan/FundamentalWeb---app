@@ -4,10 +4,10 @@ import {
   View,
   Text,
   ScrollView,
-  SafeAreaView,
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { getLessonById } from '@/data/curriculum';
@@ -16,8 +16,10 @@ import { GameButton } from '@/components/ui/GameButton';
 import { WorldColors } from '@/constants/theme';
 import { UserStats } from '@/types';
 import { LocalCodeRunner } from '@/components/playground/LocalCodeRunner';
+import { useResponsive } from '@/hooks/useResponsive';
 
 export default function LessonDetailScreen() {
+  const { contentMaxWidth } = useResponsive();
   const { id } = useLocalSearchParams<{ id: string }>();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [showLivePreview, setShowLivePreview] = useState(false);
@@ -34,7 +36,7 @@ export default function LessonDetailScreen() {
 
   if (!lesson) {
     return (
-      <SafeAreaView style={styles.safe}>
+      <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
         <View style={styles.errorBox}>
           <Text style={styles.errorText}>Materi tidak ditemukan.</Text>
           <GameButton
@@ -62,25 +64,27 @@ export default function LessonDetailScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
       {/* Top App Bar */}
       <View style={styles.navBar}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backBtn}
-        >
-          <Ionicons name="arrow-back" size={24} color="#0F172A" />
-        </TouchableOpacity>
+        <View style={{ maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center', flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backBtn}
+          >
+            <Ionicons name="arrow-back" size={24} color="#0F172A" />
+          </TouchableOpacity>
 
-        <View style={styles.navMiddle}>
-          <Text style={[styles.navWorldTag, { color: worldTheme.primary }]}>
-            {lesson.worldTitle} \u2022 Level {lesson.level}
-          </Text>
-        </View>
+          <View style={styles.navMiddle}>
+            <Text style={[styles.navWorldTag, { color: worldTheme.primary }]}>
+              {lesson.worldTitle} \u2022 Level {lesson.level}
+            </Text>
+          </View>
 
-        <View style={styles.navXpPill}>
-          <Ionicons name="star" size={14} color="#D97706" />
-          <Text style={styles.navXpText}>+{lesson.xpReward} XP</Text>
+          <View style={styles.navXpPill}>
+            <Ionicons name="star" size={14} color="#D97706" />
+            <Text style={styles.navXpText}>+{lesson.xpReward} XP</Text>
+          </View>
         </View>
       </View>
 
@@ -88,6 +92,7 @@ export default function LessonDetailScreen() {
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
       >
+        <View style={{ maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center' }}>
         {/* Lesson Title & Objectives */}
         <View style={styles.headerCard}>
           <View style={[styles.levelTag, { backgroundColor: worldTheme.light }]}>
@@ -220,17 +225,20 @@ export default function LessonDetailScreen() {
             )}
           </View>
         )}
+        </View>
       </ScrollView>
 
       {/* Sticky Bottom Quiz CTA */}
       <View style={styles.bottomBar}>
-        <GameButton
-          title={`Uji Pemahaman (${lesson.questions.length} Soal) \u2192`}
-          variant="primary"
-          size="lg"
-          onPress={handleStartQuiz}
-          style={{ width: '100%' }}
-        />
+        <View style={{ maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center' }}>
+          <GameButton
+            title={`Uji Pemahaman (${lesson.questions.length} Soal) \u2192`}
+            variant="primary"
+            size="lg"
+            onPress={handleStartQuiz}
+            style={{ width: '100%' }}
+          />
+        </View>
       </View>
     </SafeAreaView>
   );

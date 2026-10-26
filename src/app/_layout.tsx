@@ -6,6 +6,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { initDatabase } from '@/database/db';
 import { getUserProfile, unlockLesson } from '@/database/repository';
 
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -46,7 +48,7 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <SafeAreaProvider>
       <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -55,7 +57,7 @@ export default function RootLayout() {
         <Stack.Screen name="quiz/[id]" options={{ headerShown: false, gestureEnabled: false }} />
         <Stack.Screen name="project/[id]" options={{ headerShown: false }} />
       </Stack>
-    </>
+    </SafeAreaProvider>
   );
 }
 
