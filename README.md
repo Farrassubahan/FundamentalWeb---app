@@ -1,129 +1,227 @@
-# BPROTIC Web Academy 🚀
+<div align="center">
 
-Aplikasi mobile pembelajaran fundamental pemrograman web (HTML, CSS, JavaScript) dengan pengalaman gamifikasi interaktif terinspirasi Duolingo, didesain **100% offline-first** untuk Android menggunakan React Native & Expo SDK 58.
+  <img src="./assets/images/logo-app-web.png" alt="BPROTIC Web Academy Logo" width="110" height="110" style="border-radius: 22px;" />
+
+  # BPROTIC Web Academy 🚀
+  
+  **Aplikasi Mobile Pembelajaran Fundamental Web (HTML, CSS, JavaScript) dengan Gamifikasi Interaktif Ala Duolingo — 100% Offline-First.**
+
+  [![Expo SDK](https://img.shields.io/badge/Expo-SDK_58-black.svg?style=for-the-badge&logo=expo)](https://expo.dev)
+  [![React Native](https://img.shields.io/badge/React_Native-0.88-61DAFB.svg?style=for-the-badge&logo=react)](https://reactnative.dev)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6.svg?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+  [![SQLite](https://img.shields.io/badge/SQLite-Offline_First-003B57.svg?style=for-the-badge&logo=sqlite)](https://docs.expo.dev/versions/latest/sdk/sqlite/)
+  [![Platform](https://img.shields.io/badge/Platform-Android%20|%20iOS%20|%20Web-blueviolet.svg?style=for-the-badge)](#)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](./LICENSE)
+
+</div>
+
+---
+
+## 📖 Daftar Isi
+
+- [Tentang Proyek](#-tentang-proyek)
+- [Fitur Utama](#-fitur-utama)
+  - [Gamifikasi Ala Duolingo](#1-gamifikasi-interaktif-ala-duolingo)
+  - [Kurikulum 4 Dunia Pembelajaran](#2-kurikulum-lengkap-4-dunia-pembelajaran)
+  - [Code Playground Offline](#3-offline-code-playground-in-app-ide)
+  - [Penyimpanan Lokal Persisten](#4-penyimpanan-lokal-persisten-100-offline-first)
+- [Arsitektur & Teknologi](#-arsitektur--teknologi)
+- [Struktur Direktori](#-struktur-direktori)
+- [Panduan Instalasi & Menjalankan](#-panduan-instalasi--menjalankan)
+- [Membangun File APK Standalone](#-membangun-file-apk-standalone)
+- [Pemeriksaan Kode & Standar Kualitas](#-pemeriksaan-kode--standar-kualitas)
+- [Kontribusi](#-kontribusi)
+- [Lisensi](#-lisensi)
+
+---
+
+## 💡 Tentang Proyek
+
+**BPROTIC Web Academy** dirancang untuk memecahkan hambatan terbesar bagi pemula yang ingin belajar pemrograman web di Indonesia: **ketergantungan terhadap koneksi internet yang stabil dan kejenuhan saat membaca materi teks pasif**.
+
+Aplikasi ini mengemas seluruh materi dasar web (HTML, CSS, JavaScript modern) ke dalam **peta petualangan (roadmap) bertingkat** dengan sistem penilaian interaktif, tantangan kuis gamifikasi dengan nyawa (hearts), serta editor kode mandiri (*code playground*) yang mengeksekusi kode langsung di perangkat pengguna secara lokal tanpa memerlukan internet atau server eksternal sama sekali.
 
 ---
 
 ## 🌟 Fitur Utama
 
-1. **Gamified Learning Path**:
-   - 4 Dunia Pembelajaran bertingkat: HTML, CSS, JavaScript, dan Web Projects.
-   - Peta belajar (roadmap) dengan node interaktif (Locked, Unlocked, Completed).
-   - Sistem Hati (Hearts), XP, Streak harian, dan Leveling.
-2. **Evaluasi Interaktif 5 Tipe Soal**:
-   - Multiple Choice (Pilihan Ganda)
-   - True / False (Benar / Salah)
-   - Fill in the Blank (Melengkapi Kode)
-   - Order Lines (Menyusun Baris Kode)
-   - Find the Bug (Menemukan Baris Kode yang Error)
-   - Penjelasan detail untuk setiap jawaban benar maupun salah.
-3. **Offline Code Playground**:
-   - Editor kode multi-tab (HTML, CSS, JavaScript) dengan template bawaan.
-   - Eksekusi lokal instan di browser WebView perangkat tanpa server eksternal atau CDN.
-   - Panel output konsol dan penanganan runtime error interaktif.
-4. **4 Hands-On Web Projects**:
-   - Personal Profile Page
-   - Interactive Calculator
-   - To-Do List Web App
-   - Responsive Portfolio Page
-   - Dilengkapi kriteria acceptance checklist dan submission review.
-5. **Penyimpanan Lokal Persisten**:
-   - Didukung `expo-sqlite` untuk menyimpan profil, XP, streak, lencana, dan riwayat quiz.
-   - Progres tetap utuh saat aplikasi ditutup atau perangkat direstart.
-   - Fitur reset progres dengan modal konfirmasi aman.
+### 1. Gamifikasi Interaktif Ala Duolingo
+* **Sistem Nyawa (Hearts System)**:
+  * Pengguna dibekali 5 ❤️ nyawa. Setiap jawaban salah pada sesi kuis akan mengurangi 1 hati.
+  * **Regenerasi Otomatis**: Nyawa pulih secara otomatis setiap 30 menit saat istirahat.
+  * **Tantangan Pemulihan Nyawa (*Refill Challenge*)**: Jika nyawa habis (`0 ❤️`), pengguna dapat langsung memulihkannya hingga penuh (`+5 ❤️`) dengan menyelesaikan latihan kilat 1 soal acak.
+  * **Soal Tantangan Dinamis**: Bank soal pemulihan nyawa memiliki 24+ pertanyaan bervariasi dengan mekanisme anti-duplikasi otomatis sehingga soal berganti setiap kali salah.
+* **Alur Koreksi Mandiri**:
+  * Ketika pengguna menjawab salah pada kuis, aplikasi **TIDAK melompati soal**. Pengguna tetap berada di nomor tersebut dengan tombol **"Coba Lagi"** agar dapat membaca pembahasan dan memperbaiki pemahamannya.
+* **Progress Bar & XP Rewards**:
+  * Pengguna mengumpulkan XP dari setiap materi dan kuis yang diselesaikan untuk menaikkan level pembelajar.
+* **Streak Harian**:
+  * Membangun kebiasaan ngoding harian dengan pelacak streak aktif yang diperbarui otomatis setiap hari.
+* **10 Lencana Prestasi (Badges)**:
+  * Penghargaan tersimpan di database lokal untuk berbagai pencapaian (First Step, Quiz Master, Night Owl, Persistent Coder, dll.).
+
+### 2. Kurikulum Lengkap 4 Dunia Pembelajaran
+Kurikulum disusun secara bertahap dari pemula hingga mahir dalam Bahasa Indonesia:
+1. **Dunia 1: HTML Basics & Semantics** (Struktur dokumen, teks, list, multimedia, formulir, semantic tags, SEO dasar).
+2. **Dunia 2: CSS Styling & Flexbox** (Selektor, Box Model, Margin & Padding, Flexbox Layout, Typography, Responsivitas).
+3. **Dunia 3: JavaScript Programming** (Variabel `let`/`const`, tipe data, operator logika, manipulasi DOM, Event Listener, Async/Await).
+4. **Dunia 4: Capstone Web Projects** (4 mini proyek nyata: *Personal Bio Web*, *Interactive Calculator*, *To-Do List App*, dan *Responsive Portfolio*).
+
+### 3. Offline Code Playground (In-App IDE)
+* **Editor Multi-Tab**: Tab terpisah untuk mengetik HTML, CSS, dan JavaScript secara independen.
+* **Eksekusi Lokal Instan**: Kode dirender secara langsung menggunakan sandbox `WebView` lokal tanpa CDN eksternal.
+* **Virtual Console**: Menangkap log `console.log()`, `console.warn()`, dan menangani runtime error JavaScript secara interaktif.
+* **Template Proyek Bawaan**: Pilihan template awal untuk memulai eksperimen kode dengan cepat.
+
+### 4. Penyimpanan Lokal Persisten (100% Offline-First)
+* Didukung oleh engine database **`expo-sqlite`**.
+* Seluruh data pengguna (profil nama, avatar, target menit belajar, perolehan XP, level, streak, riwayat quiz, dan status lencana) tersimpan aman di penyimpanan internal ponsel.
+* Dilengkapi fitur **Reset Progres** dengan modal konfirmasi interaktif dua langkah demi keamanan data.
 
 ---
 
-## 🏗️ 10 AI Agents Pembagian Tanggung Jawab
+## 🛠️ Arsitektur & Teknologi
 
-| Agent | Peran | Kontribusi Utama |
-|---|---|---|
-| **Agent 1** | Project Lead & Software Architect | Merancang kontrak tipe data (`src/types`), struktur folder modular, dan arsitektur routing Expo Router. |
-| **Agent 2** | UI/UX Designer | Menetapkan sistem desain gamifikasi: tombol 3D (`GameButton`), indikator status (`StatPill`), progress bar glossy, palet warna 4 dunia. |
-| **Agent 3** | Mobile Frontend Developer | Mengembangkan layar aplikasi: Dashboard, Roadmap, Onboarding, Lesson Detail, Quiz, Progres, dan Pengaturan. |
-| **Agent 4** | Curriculum Designer | Menyusun kurikulum teknis HTML, CSS, JavaScript & 4 mini projects dalam Bahasa Indonesia yang ramah pemula. |
-| **Agent 5** | Lesson & Quiz Engine Developer | Mengembangkan mesin penilaian 5 tipe soal, feedback instan (`FeedbackBanner`), dan evaluasi skor kelulusan. |
-| **Agent 6** | Offline Code Playground Developer | Membangun `LocalCodeRunner` dengan sandbox WebView lokal, interseptor `console.log`, dan template kode. |
-| **Agent 7** | Local Database & Progress Developer | Merancang skema SQLite (`users`, `user_stats`, `lesson_progress`, `quiz_history`, `user_badges`) dan repository CRUD offline. |
-| **Agent 8** | Gamification Developer | Mengimplementasikan rumus leveling, kalkulasi streak harian, regenerasi hati berkala, dan evaluasi lencana prestasi. |
-| **Agent 9** | QA & Testing Engineer | Melakukan audit TypeScript (`tsc --noEmit`), konfigurasi ESLint, dan pengujian alur belajar tanpa internet. |
-| **Agent 10** | Build, Integration & Release Engineer | Mengonfigurasi `app.json`, `eas.json` untuk Android APK build, dan bundling aset lokal. |
+| Komponen | Teknologi yang Digunakan |
+|---|---|
+| **Framework Mobile** | [React Native 0.88](https://reactnative.dev/) & [Expo SDK 58](https://expo.dev/) |
+| **Bahasa Pemrograman** | [TypeScript 6.0](https://www.typescriptlang.org/) (Strict Type-Checking) |
+| **Navigasi & Routing** | [Expo Router v4](https://docs.expo.dev/router/introduction/) (File-based Routing) |
+| **Database Lokal** | [expo-sqlite](https://docs.expo.dev/versions/latest/sdk/sqlite/) (Embedded SQLite Engine) |
+| **Safe Execution Sandbox**| [react-native-webview](https://github.com/react-native-webview/react-native-webview) |
+| **Ikonografi & Aset** | [@expo/vector-icons (Ionicons)](https://icons.expo.fyi/) & Brand Asset Kustom |
+| **Responsivitas Layout** | Kustom `useResponsive` hook (Mobile, Tablet, Desktop Web) |
 
 ---
 
 ## 📂 Struktur Direktori
 
-```
+```text
 src/
-├── app/
-│   ├── _layout.tsx              # Root Stack Navigator & DB Initializer
-│   ├── index.tsx                # Root redirect ke (tabs)
-│   ├── onboarding.tsx           # Setup profil awal & avatar
-│   ├── (tabs)/
-│   │   ├── _layout.tsx          # Custom Bottom Tab Navigator
-│   │   ├── index.tsx            # Home Dashboard & Quick Continue
-│   │   ├── learn.tsx            # Learning Path Roadmap (Worlds 1-4)
-│   │   ├── playground.tsx       # Offline Code Playground (HTML/CSS/JS)
-│   │   ├── progress.tsx         # Progres, Lencana & Riwayat Quiz
-│   │   └── settings.tsx         # Profil, Status Offline & Reset Progres
+├── app/                         # Rute Navigasi Expo Router
+│   ├── _layout.tsx              # Root Layout, Stack Nav & Inisialisasi SQLite
+│   ├── index.tsx                # Gerbang utama / auto-redirect
+│   ├── onboarding.tsx           # Setup profil awal & pemilihan avatar
+│   ├── (tabs)/                  # Bottom Tabs Navigator
+│   │   ├── _layout.tsx          # Konfigurasi custom responsive navbar
+│   │   ├── index.tsx            # Dashboard Beranda & Ringkasan Belajar
+│   │   ├── learn.tsx            # Roadmap Jalur Pembelajaran 4 Dunia
+│   │   ├── playground.tsx       # Offline Code Playground (Editor & Sandbox)
+│   │   ├── progress.tsx         # Riwayat Skor, Level, dan Galeri Lencana
+│   │   └── settings.tsx         # Manajemen Profil, Preferensi & Reset Data
 │   ├── lesson/
-│   │   └── [id].tsx             # Pembaca materi & live snippet preview
+│   │   └── [id].tsx             # Reader Materi Pelajaran & Live Snippet Preview
 │   ├── quiz/
-│   │   └── [id].tsx             # Gamified Quiz Engine (Hearts, XP, 5 tipe soal)
+│   │   └── [id].tsx             # Mesin Kuis Gamifikasi (Hearts, Retry, Refill)
 │   └── project/
-│       └── [id].tsx             # Guided Web Project Workbench & Checklist
+│       └── [id].tsx             # Capstone Project Workbench & Acceptance Criteria
 ├── components/
-│   ├── ui/                      # GameButton 3D, StatPill, ProgressBar, PathNode, Banner
-│   └── playground/              # LocalCodeRunner (isolated WebView)
+│   ├── ui/                      # Komponen Gamifikasi (GameButton, StatPill, Modals)
+│   │   ├── FeedbackBanner.tsx   # Banner Evaluasi Benar/Salah (Coba Lagi)
+│   │   ├── OutOfHeartsModal.tsx # Dialog Kehabisan Nyawa Ala Duolingo
+│   │   ├── RefillChallengeModal.tsx # Modal Latihan Kilat Pemulihan Nyawa
+│   │   ├── QuitConfirmModal.tsx # Konfirmasi Keluar Kuis Interaktif
+│   │   └── TopHeaderStats.tsx   # Header Branding Logo & Statistik XP/Streak/Hearts
+│   └── playground/              # Runner WebView & Virtual Console
 ├── constants/
-│   ├── theme.ts                 # Tokens, WorldColors, Spacing, Typography
-│   └── badges.ts                # Spesifikasi 10 lencana prestasi offline
+│   ├── theme.ts                 # Design Tokens, Palet Warna 4 Dunia, Typo
+│   └── badges.ts                # Spesifikasi 10 Lencana Prestasi
 ├── data/
-│   ├── curriculum/              # Dataset pelajaran HTML, CSS, JS
-│   ├── projects/                # Dataset 4 web projects
-│   └── playgroundTemplates.ts   # Template eksperimen kode offline
+│   ├── curriculum/              # Kurikulum Pembelajaran (HTML, CSS, JS)
+│   │   └── refillChallenges.ts  # Pool 24 Soal Latihan Pemulihan Nyawa
+│   ├── projects/                # Spesifikasi 4 Capstone Web Projects
+│   └── playgroundTemplates.ts   # Template Eksperimen Playground
 ├── database/
-│   ├── db.ts                    # Inisialisasi SQLite Database
-│   └── repository.ts            # Operasi data persisten lokal
+│   ├── db.ts                    # Koneksi & Migrasi Tabel SQLite
+│   └── repository.ts            # Data Access Layer (CRUD Repository)
 ├── services/
-│   ├── gamification.ts          # Rumus level, streak, regenerasi hati
-│   └── quizEngine.ts            # Evaluasi jawaban & kalkulasi skor
+│   ├── gamification.ts          # Rumus Level, Perhitungan Streak, Badge Engine
+│   └── quizEngine.ts            # Validator Jawaban 5 Tipe Soal
 └── types/
-    └── index.ts                 # Kontrak antarmuka TypeScript
+    └── index.ts                 # TypeScript Interface & Type Definitions
 ```
 
 ---
 
-## 🛠️ Perintah Menjalankan Aplikasi
+## 🚀 Panduan Instalasi & Menjalankan
 
-### 1. Menjalankan Mode Development
-```bash
-npx expo start
-```
-Buka aplikasi di Android emulator atau perangkat fisik menggunakan development build.
+### Prasyarat
+- [Node.js](https://nodejs.org/) versi 18 atau lebih baru.
+- Manajer paket `npm` atau `bun`.
+- Aplikasi **Expo Go** di HP Android/iOS (untuk testing lokal) atau Android Studio Emulator.
 
-### 2. Memeriksa Tipe Data (Typecheck)
-```bash
-npx tsc --noEmit
-```
+### Langkah-Langkah
 
-### 3. Memeriksa Linter
-```bash
-npx eslint
-```
+1. **Clone Repositori**:
+   ```bash
+   git clone https://github.com/Farrassubahan/FundamentalWeb---app.git
+   cd FundamentalWeb---app
+   ```
+
+2. **Pasang Dependensi**:
+   ```bash
+   npm install
+   ```
+
+3. **Jalankan Server Development**:
+   ```bash
+   npx expo start
+   ```
+
+4. **Jalankan di Platform Tertentu**:
+   - Tekan `a` untuk membuka di **Android Emulator / Perangkat Android**.
+   - Tekan `w` untuk membuka di **Web Browser**.
+   - Tekan `i` untuk membuka di **iOS Simulator** (khusus macOS).
 
 ---
 
-## 📦 Membangun File APK Android (Stand-Alone)
+## 📦 Membangun File APK Standalone
 
-Aplikasi telah dikonfigurasi dengan EAS Build untuk menghasilkan APK yang dapat dipasang langsung pada perangkat Android tanpa memerlukan Expo Go atau koneksi internet saat dijalankan:
+Aplikasi ini dapat dibundel menjadi file APK mandiri (Standalone) yang bisa langsung diinstal di perangkat Android tanpa koneksi Expo Go:
 
 ```bash
-# 1. Login ke EAS jika belum
+# 1. Pastikan EAS CLI terpasang dan login ke akun Expo
 npx eas-cli login
 
-# 2. Build APK Android mandiri
+# 2. Jalankan build APK standalone
 npx eas-cli build --profile preview --platform android
 ```
 
-File APK yang dihasilkan siap di-install pada perangkat Android dan diuji dalam kondisi **Airplane Mode (Tanpa Internet)**.
+File `.apk` yang dihasilkan siap didistribusikan dan diuji dalam kondisi **Mode Pesawat (Airplane Mode / 100% Offline)**.
+
+---
+
+## 🧪 Pemeriksaan Kode & Standar Kualitas
+
+Sebelum merilis perubahan ke repositori, seluruh kode harus lolos validasi ketat:
+
+```bash
+# Typecheck TypeScript (Strict, 0 error)
+npx tsc --noEmit
+
+# Linter Standar Expo & React 19 (0 warning, 0 error)
+npx expo lint
+
+# Diagnostik Dependensi & Environment
+npx expo-doctor
+```
+
+---
+
+## 🤝 Kontribusi
+
+Kontribusi, perbaikan bug, dan penambahan kurikulum materi sangat disambut!
+1. Fork repositori ini.
+2. Buat branch fitur baru (`git checkout -b fitur/fitur-keren`).
+3. Commit perubahanmu (`git commit -m 'feat: menambahkan materi CSS Grid'`).
+4. Push ke branch (`git push origin fitur/fitur-keren`).
+5. Buat **Pull Request**.
+
+---
+
+## 📄 Lisensi
+
+Proyek ini didistribusikan di bawah naungan **[MIT License](./LICENSE)**.  
+Bebas digunakan, dimodifikasi, dan didistribusikan untuk kepentingan edukasi dan pengembangan perangkat lunak.
+
+© 2026 **BPROTIC Educational Labs / Farras Subahan**. All rights reserved.
